@@ -1,0 +1,275 @@
+html,body{height:100%;margin: 0;padding: 0;font-size: .32rem;font-family: PingFangSC-Regular, Helvetica,sans-serif;background-color: #423743;}
+p{margin: 0;}
+img{
+  width: 100%;
+}
+.wrapper{
+  height: 100%;
+  padding: .14rem .16rem;
+  box-sizing: border-box;
+  display: flex;
+  position: relative;
+  line-height: 1;
+  background-color: #423743;
+}
+.content{
+  overflow: scroll;
+  flex: 1;
+}
+h1{
+  margin: 0;
+}
+li{
+  list-style: none;
+}
+#app {
+  color: #ffffff;
+  height: 100%;
+}
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+.con-left{
+  width: 2.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 .2rem;
+  /* padding-left: .2rem; */
+  box-sizing: border-box;
+}
+
+
+.btn-top{
+  width: 2rem;
+  display: flex;
+}
+.icon-btn{
+  width: .34rem;
+  height: .34rem;
+  display:block; 
+}
+.icon-btn:first-of-type{
+  margin-right: .17rem;
+}
+.song{
+  width: 2rem;
+  font-size: .22rem;
+  overflow: hidden;
+  font-weight: bold;
+  margin-top: .33rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.author{
+  width: 2rem;
+  font-size: .15rem;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: .05rem;
+}
+.avatar{
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  margin-top: .3rem;
+}
+.name{
+  width: 100%;
+  font-size: .16rem;
+  font-weight: bold;
+  margin-top: .15rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.btn-more{
+  width: .98rem;
+  height: .38rem;
+  border: 1px solid #2BD5C4;
+  color: #2BD5C4;
+  border-radius: .19rem;
+  margin-top: .21rem;
+  font-size: .16rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.date{
+  font-size: .12rem;
+  margin-top: .22rem;
+}
+
+/* 右部 */
+.con-right{
+  background-color: rgba(255, 255, 255, .16);
+  flex: 1;
+  border-radius: .11rem;
+  padding: .24rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.con-r-t{
+  padding:0 0 .15rem .4rem ;
+  border-bottom: 2px #2BD6C5 solid;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.score-block{
+  display: flex;
+  flex-direction: column;
+}
+.score-nav{
+  display: flex;
+  align-items: center;
+}
+.score{
+  font-size: .37rem;
+  font-weight: bold;
+  color: #2BD6C5;
+  margin-right: .17rem;
+  line-height: 1;
+}
+.new_record{
+  width: .6rem;
+  height: .2rem;
+}
+.star-nav{
+  width: 1.25rem;
+  overflow: hidden;
+  display: flex;
+  position: relative;
+}
+.star-active-list{
+  position: absolute;
+}
+.star{
+  width: .21rem;
+  height: .21rem;
+  margin-right: .03rem;
+  display: inline-block;
+}
+.rank-block{
+  font-size: .16rem;
+  font-weight: bold;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: right;
+}
+.now-rank{
+  display: flex;
+  align-items: center;
+}
+.rank-num{
+  width: .3rem;
+  height: .3rem;
+  border-radius: 50%;
+  background-color: rgba(43,214,197,.25);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rank-num::after{
+  content: '';
+  width: .34rem;
+  height: .34rem;
+  border-radius: 50%;
+  position: absolute;
+  left: -.02rem;
+  top: -.02rem;
+  background-color: rgba(43,214,197,.15);
+}
+.up-rank{
+  color: #2BD6C5;
+  font-size: .15rem;
+  font-weight: bold;
+}
+.icon-arrow-up{
+  width: .11rem;
+  height: .13rem;
+}
+
+.con-r-c{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.pro-list{
+  
+}
+.progress{
+  height: .21rem;
+  background: linear-gradient(to left,rgba(43,214,197,.1),rgba(43,214,197,1));
+  border-radius: .11rem;
+  font-size: .16rem;
+  font-weight: bold ;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 .14rem;
+  margin-bottom: .16rem;
+}
+.progress:last-of-type{
+  margin-bottom: 0;
+}
+.max-hit{
+  font-size: .16rem;
+  font-weight: bold;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.max-hit span{
+  font-size: .22rem;
+  color: #2BD4C4;
+}
+
+.con-r-b{
+  display: flex;
+  align-items: flex-end;
+}
+.recommend-title{
+  height: .91rem;
+  writing-mode:vertical-rl;
+  font-size: .16rem;
+  font-weight: bold;
+  text-align: center;
+}
+.recommend-list{
+  width: 100%;
+  display: flex;
+}
+.rec{
+  width: 1.5rem;
+  height: .91rem;
+  border-radius: .06rem;
+  background-color: salmon;
+  margin-left: .13rem;
+  overflow: hidden;
+}
+.recommend-cover{
+  width: 100%;
+  height: 100%;
+}
+.empty-block{
+  flex: 1;
+  height: 100%;
+  font-size: .12rem;
+  font-weight: 400;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

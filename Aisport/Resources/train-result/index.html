@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Document</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<script src="./js/vue.min.js"></script>
+<script src="./js/rem.js"></script>
+<script src="./js/gsap.min.js"></script>
+
+<body>
+  <div id="app">
+    <div class="wrapper">
+      <div class="con-left">
+        <div class="btn-top">
+          <img class="icon-btn" src="./images/icon_back.png" alt="" @click="returnBack">
+          <img class="icon-btn" src="./images/icon_share.png" alt="" @click="share">
+        </div>
+        <div class="song">{{detail.song}}</div>
+        <div class="author">{{detail.author}}</div>
+        <img class="avatar" :src="detail.avatar || './images/avatar.png'" alt="">
+        <div class="name">{{detail.name}}</div>
+        <div class="btn-more" @click="practiceOneMore">
+          再练一次
+        </div>
+        <div class="date">{{detail.time}}</div>
+      </div>
+      <div class="con-right">
+        <div class="con-r-t">
+          <div class="score-block">
+            <div class="score-nav">
+              <div class="score">{{scoreNumber || 0}}</div>
+              <img v-if="detail.isNewRecord === 'true'" class="new_record" src="./images/new_record.png" alt="">
+            </div>
+            <div class="star-nav">
+              <div :style="{width:detail.star * 20 + '%'}" class="star-active-list">
+                <img class="star star-active" src="./images/icon_star_active.png" v-for="i in 5" alt="">
+              </div>
+              <div class="star-list">
+                <img class="star" src="./images/icon_star.png" v-for="i in 5" alt="">
+              </div>
+            </div>
+          </div>
+          <div class="rank-block" v-if="detail.ranking > 0">
+            <div class="now-rank">
+              当前排名：<div class="rank-num">{{detail.ranking}}</div>
+            </div>
+            <div class="up-rank">
+              上升{{progressNumber}}位
+              <img class="icon-arrow-up" src="./images/arrow_up.png" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="con-r-c">
+          <div class="pro-list">
+            <div class="progress" style="width:82.2%">
+              <span class="pro-title">HIDO</span>
+              <span class="pro-num">{{hidoNumber || 0}}</span>
+            </div>
+            <div class="progress" style="width:63.8%">
+              <span class="pro-title">PERFECT</span>
+              <span class="pro-num">{{perfectNumber || 0}}</span>
+            </div>
+            <div class="progress" style="width:56.3%">
+              <span class="pro-title">SUPER</span>
+              <span class="pro-num">{{superNumber || 0}}</span>
+            </div>
+            <div class="progress" style="width:42.8%">
+              <span class="pro-title">GOOD</span>
+              <span class="pro-num">{{goodNumber || 0}}</span>
+            </div>
+          </div>
+          <div class="max-hit">
+            最高连击数：<span>{{maxHitNumber || 0}}</span>
+          </div>
+        </div>
+        <div class="con-r-b">
+          <span class="recommend-title">为你推荐</span>
+          <div class="recommend-list" v-if="recommendList.length">
+            <div class="rec" v-for="item in recommendList">
+              <img class="recommend-cover" :src="item.cover" alt="">
+            </div>
+          </div>
+          <div class="empty-block" v-else>
+            暂无数据
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  var data = {
+    detail: {},
+    score:0,
+    hido:0,
+    perfect:0,
+    super:0,
+    good:0,
+    maxHit:0,
+    progress:0,
+    recommendList: []
+  }
+  var vm = new Vue({
+    el: '#app',
+    data: data,
+    computed: {
+      scoreNumber: function () {
+        return this.score.toFixed(0);
+      },
+      hidoNumber: function () {
+        return this.hido.toFixed(0);
+      },
+      perfectNumber: function () {
+        return this.perfect.toFixed(0);
+      },
+      superNumber: function () {
+        return this.super.toFixed(0);
+      },
+      goodNumber: function () {
+        return this.good.toFixed(0);
+      },
+      maxHitNumber: function() {
+        return this.maxHit.toFixed(0);
+      },
+      progressNumber: function() {
+        return this.progress.toFixed(0);
+      }
+    },
+    mounted() {
+      this.initData();
+      this.initNumberTween();
+      this.getRecommendList();
+      // this.getRank()
+    },
+    methods: {
+      initData(){
+        this.detail = this.GetRequest();
+        console.log(this.detail)
+      },
+      GetRequest() {
+        var url = decodeURI(location.search); //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+          var str = url.substr(1);
+          strs = str.split("&");
+          for (var i = 0; i < strs.length; i++) {
+            theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+          }
+        }
+        return theRequest;
+      },
+      initNumberTween(){
+        gsap.to(this.$data, { duration: 1.5, score: this.detail.score || 0 });
+        gsap.to(this.$data, { duration: 1.5, hido: this.detail.hido || 0 });
+        gsap.to(this.$data, { duration: 1.5, perfect: this.detail.perfect || 0 });
+        gsap.to(this.$data, { duration: 1.5, super: this.detail.super || 0 });
+        gsap.to(this.$data, { duration: 1.5, good: this.detail.good || 0 });
+        gsap.to(this.$data, { duration: 1.5, maxHit: this.detail.maxHit || 0 });
+        gsap.to(this.$data, { duration: 1.5, progress: this.detail.progress || 0 });
+      },
+      getRecommendList() {
+        if(this.detail.rid){
+          let that = this;
+          this.ajax({
+            //url:'https://uat-gateway.hidbb.com/ai/video/recommend',
+            // todo
+             url:'https://gateway.hidbb.com/ai/video/recommend',
+            type:'get',
+            dataType:'jsonp',
+            data:{
+              filterCode:that.detail.videoCode || ''
+            },
+            success:function(response,xml){
+              let res = JSON.parse(response)
+              if(res.code === 0){
+                that.recommendList = res.data;
+              }
+            },
+            error:function(status){
+                //失败后执行的代码
+            }
+          })
+        }
+      },
+      getRank(){
+        let that = this;
+        this.ajax({
+          //url:'https://uat-gateway.hidbb.com/ai/videoplayrecord/report',
+          // todo
+           url:'https://gateway.hidbb.com/ai/videoplayrecord/report',
+          type:'get',
+          dataType:'jsonp',
+          data:{
+            id:that.detail.rid || ''
+          },
+          success:function(response,xml){
+            let res = JSON.parse(response)
+            if(res.code === 0){
+              that.recommendList = res.data;
+            }
+          },
+          error:function(status){
+              //失败后执行的代码
+          }
+        })
+      },
+      turnToDetail(code){
+        window.location.href = `https://uat-aih5.hidbb.com/trainingDetail?code=${code}`
+      },
+      returnBack() {
+        try {
+          window.webkit.messageHandlers.pageGoBack.postMessage({});
+        } catch (error) {
+
+        }
+      },
+      share() {
+        try {
+          window.webkit.messageHandlers.sendResultMomentShare.postMessage({});
+        } catch (error) {
+
+        }
+      },
+      practiceOneMore(e) {
+        try {
+          window.webkit.messageHandlers.trainingBack.postMessage({});
+        } catch (error) {
+
+        }
+      },
+      ajax(options) {
+        let op = options || {};
+        op.type = (op.type || 'GET').toUpperCase();
+        op.dataType = op.dataType || 'json';
+        params = this.formatParams(op.data);
+
+        //创建-第一步
+        var xhr;
+        //非IE6
+        if (window.XMLHttpRequest) {
+          xhr = new XMLHttpRequest();
+        } else {
+          //ie6及其以下版本浏览器
+          xhr = ActiveXObject('Microsoft.XMLHTTP');
+        }
+
+        //接收-第三步
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4) {
+            var status = xhr.status;
+            if (status >= 200 && status < 300) {
+              op.success && op.success(xhr.responseText, xhr.responseXML);
+            } else {
+              op.error && op.error(status);
+            }
+          }
+        }
+
+        //连接和发送-第二步
+        if (op.type == 'GET') {
+          xhr.open('GET', op.url + '?' + params, true);
+          xhr.send(null);
+        } else if (op.type == 'POST') {
+          xhr.open('POST', op.url, true);
+          //设置表单提交时的内容类型
+          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          xhr.send(params);
+        }
+      },
+      formatParams(data){
+        var arr=[];
+        for(var name in data){
+            arr.push(encodeURIComponent(name)+'='+encodeURIComponent(data[name]));
+        }
+        return arr.join('&');
+      }
+    },
+  })
+</script>
+
+</html>
