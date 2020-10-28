@@ -2,8 +2,8 @@
 xcuserdata
 .DS_Store
 *.xcworkspace 
-# *.mp4
-# *.mp3
+*.mp4
+*.mp3
 # Pods
 # Podfile.lock
 */.DS_Store
