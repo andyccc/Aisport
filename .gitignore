@@ -1,5 +1,7 @@
 # ignore model file
 xcuserdata
 .DS_Store
+.xcworkspace 
+.lock 
 .mp4
 */.DS_Store
