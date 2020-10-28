@@ -43,7 +43,7 @@
         [self addSubview:_classImageView];
     //  _classImageView.backgroundColor = [UIColor yellowColor];
         _classImageView.image = [UIImage imageNamed:@"home_sportBanner"];
-        _classImageView.userInteractionEnabled = YES;
+        _classImageView.userInteractionEnabled = NO;
         UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(btnAction)];
         [_classImageView addGestureRecognizer:tgr];
 
@@ -68,6 +68,14 @@
 }
 
 
+- (void)btnAction
+{
+    
+    if (self.homeCellJumpBlock) {
+        self.homeCellJumpBlock();
+    }
+    
+}
 
 - (void)awakeFromNib {
     [super awakeFromNib];

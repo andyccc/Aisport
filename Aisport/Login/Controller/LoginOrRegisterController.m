@@ -132,46 +132,40 @@
 //                }];
 
 //        InputCodeController *vc = [[InputCodeController alloc] init];
+//        vc.phone = @"17326831803";
 //        [self.navigationController pushViewController:vc animated:YES];
         
-        NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
-        [body setObject:_phoneTF.text forKey:@"phone"];
-        [SVProgressHUD show];
-        [LoginNetWork checkUserIdWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
-            if (ResponseSuccess) {
-                //data(responseAfter) 0无账号无用户信息,1有账号无用户信息,2有账号并且有用户信息
-                if ([StringForId(responseAfter) isEqual:@"0"]) {
-                    [self getRegisterCode];
+        [self.navigationController dismissViewControllerAnimated:YES completion:^{
+    //        [self.navigationController popViewControllerAnimated:NO];
+        }];
+        
+//        NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+//        [body setObject:_phoneTF.text forKey:@"phone"];
+//        [SVProgressHUD show];
+//        [LoginNetWork checkUserIdWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+//            if (ResponseSuccess) {
+//                //data(responseAfter) 0无账号无用户信息,1有账号无用户信息,2有账号并且有用户信息
+//                if ([StringForId(responseAfter) isEqual:@"0"]) {
+//                    [self getRegisterCode];
+////                    [self getSendSmsCode];
+//                }else if ([StringForId(responseAfter) isEqual:@"1"]){
 //                    [self getSendSmsCode];
-                }else if ([StringForId(responseAfter) isEqual:@"1"]){
-                    [self getSendSmsCode];
-                }else if ([StringForId(responseAfter) isEqual:@"2"]){
-                    [self getSendSmsCode];
-                }
-            }
-                } andFailerFn:^(NSError * _Nonnull error) {
-                    [SVProgressHUD dismiss];
-                }];
+//                }else if ([StringForId(responseAfter) isEqual:@"2"]){
+//                    [self getSendSmsCode];
+//                }
+//            }
+//                } andFailerFn:^(NSError * _Nonnull error) {
+//                    [SVProgressHUD dismiss];
+//                }];
     }
     
 }
 
 - (void)getRegisterCode
 {
-    
+    WS(weakSelf);
     NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
     [body setObject:_phoneTF.text forKey:@"mobile"];
-//    [NPNetworkAPIList loginSendRegistWith:body AndSuccessFn:^(id responseAfter, id responseBefore) {
-//        [SVProgressHUD dismiss];
-//        if (ResponseSuccess) {
-//            InputCodeController *vc = [[InputCodeController alloc] init];
-//            vc.phone = _phoneTF.text;
-//            [self.navigationController pushViewController:vc animated:YES];
-//        }
-//        } andFailerFn:^(NSError *error) {
-//
-//        }];
-    
     [LoginNetWork getPostCodeWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
         [SVProgressHUD dismiss];
         /*
@@ -180,11 +174,8 @@
          msg = "\U5f53\U524d\U6a21\U62df\U5f00\U5173\U5f00\U542f,\U9a8c\U8bc1\U7801\U4e3a: 1803";
          */
         if (ResponseSuccess) {
-//            if (<#condition#>) {
-//                <#statements#>
-//            }
             InputCodeController *vc = [[InputCodeController alloc] init];
-            vc.phone = _phoneTF.text;
+            vc.phone = weakSelf.phoneTF.text;
             [self.navigationController pushViewController:vc animated:YES];
         }
         } andFailerFn:^(NSError * _Nonnull error) {
@@ -195,23 +186,13 @@
 
 - (void)getSendSmsCode
 {
-//    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
-//    [body setObject:_phoneTF.text forKey:@"mobile"];
-//    [NPNetworkAPIList loginSendLoginWith:body AndSuccessFn:^(id responseAfter, id responseBefore) {
-//        if (ResponseSuccess) {
-//            InputCodeController *vc = [[InputCodeController alloc] init];
-//            [self.navigationController pushViewController:vc animated:YES];
-//        }
-//
-//        } andFailerFn:^(NSError *error) {
-//
-//        }];
-    
+    WS(weakSelf);
     NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
     [body setObject:_phoneTF.text forKey:@"mobile"];
     [LoginNetWork getGetCodeWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
         if (ResponseSuccess) {
             InputCodeController *vc = [[InputCodeController alloc] init];
+            vc.phone = weakSelf.phoneTF.text;
             [self.navigationController pushViewController:vc animated:YES];
         }
         } andFailerFn:^(NSError * _Nonnull error) {

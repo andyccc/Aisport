@@ -8,6 +8,7 @@
 #import "HomeViewController.h"
 #import "TRClassDetailViewController.h"
 #import "CardStaticView.h"
+#import "HomeListViewCell.h"
 
 @interface HomeViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -55,24 +56,25 @@
     mainView.estimatedSectionHeaderHeight = 0;
     _mainView = mainView;
     
+    UIView *headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 254*2*Screen_Scale+4*2*Screen_Scale)];
     
     _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 254*2*Screen_Scale)];
-    [self.view addSubview:_bannerImageView];
+    [headView addSubview:_bannerImageView];
     _bannerImageView.contentMode = UIViewContentModeScaleAspectFill;
     _bannerImageView.clipsToBounds = YES;
     _bannerImageView.image = [UIImage imageNamed:@"home_banner"];
     
     
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCR_WIDTH/2-150/2, StatusHeight + 7, 150, 30)];
-    [_bannerImageView addSubview:titleLabel];
+    [self.view addSubview:titleLabel];
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.font = fontBold(16);
     titleLabel.text = @"嗨动AI";
     
     
-    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, _bannerImageView.bottom-14*2*Screen_Scale, SCR_WIDTH, SCR_HIGHT-_bannerImageView.bottom+14*2*Screen_Scale)];
-    [self.view addSubview:bottomView];
+    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, _bannerImageView.bottom-14*2*Screen_Scale, SCR_WIDTH, 18*2*Screen_Scale)];
+    [headView addSubview:bottomView];
     bottomView.backgroundColor = [UIColor whiteColor];
     
     CAShapeLayer *mask=[CAShapeLayer layer];
@@ -90,7 +92,7 @@
     [bottomView.layer addSublayer:borderLayer];
     
     
-    
+    mainView.tableHeaderView = headView;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -105,10 +107,15 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"TaskHomeListViewCell"];
+    HomeListViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"TaskHomeListViewCell"];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"TaskHomeListViewCell"];
+        cell = [[HomeListViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"TaskHomeListViewCell"];
     }
+    WS(weakSelf);
+    cell.homeCellJumpBlock = ^{
+        TRClassDetailViewController *vc = [[TRClassDetailViewController alloc] init];
+        [weakSelf.navigationController pushViewController:vc animated:YES];
+    };
 //    cell.type = _type;
 //    TaskHomeModel *model = _dataSource[indexPath.row];
 //    cell.model = model;
@@ -118,7 +125,8 @@
     return cell;
 }
 
-- (void)btnAction
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     TRClassDetailViewController *vc = [[TRClassDetailViewController alloc] init];
     [self.navigationController pushViewController:vc animated:YES];

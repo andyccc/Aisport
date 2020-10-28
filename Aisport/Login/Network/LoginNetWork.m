@@ -30,6 +30,11 @@
     [[LoginNetWork share] AFPOSTNetworkWithUrl:@"ai/hidouserinfo/register" andBody:body andSuccess:successFn andFailer:failerFn];
 }
 
++(void)loginUserWith:(NSMutableDictionary *)body  AndSuccessFn:(serverSuccessFn)successFn andFailerFn:(serverFailureFn)failerFn
+{
+    [[LoginNetWork share] AFPOSTNetworkWithUrl:@"auth/mobile/token/sms" andBody:body andSuccess:successFn andFailer:failerFn];
+}
+
 
 
 + (void)smsCodeNetworkWithValue:(NSString *)value

@@ -9,7 +9,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void(^HomeCellJumpBlock)(void);
 @interface HomeListViewCell : UITableViewCell
+
+@property (nonatomic, copy) HomeCellJumpBlock homeCellJumpBlock;
 
 @end
 

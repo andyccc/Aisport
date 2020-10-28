@@ -13,6 +13,7 @@
 
 @property (nonatomic, strong) UIButton *manButton;
 @property (nonatomic, strong) UIButton *womanButton;
+@property (nonatomic, strong) NSString *headPicUrl;
 
 @end
 
@@ -114,8 +115,9 @@
 - (void)clickAddHeadPicBtn
 {
     [self.view endEditing:YES];
+    WS(weakSelf);
     [[AddPicView shareAddPicView] addPicViewWithPicCount:1 ViewController:self IsCrop:NO AddPicBlock:^(NSArray * _Nonnull picUrlArr) {
-
+        weakSelf.headPicUrl = picUrlArr[0];
     }];
     
 //    ZBImagePicker *zbimagePicker = [ZBImagePicker imagePicker];

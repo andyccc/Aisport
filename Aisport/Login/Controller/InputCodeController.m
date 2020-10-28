@@ -118,7 +118,7 @@
     }
     NSString *code = [NSString stringWithFormat:@"%@%@%@%@",textF1.text,textF2.text,textF3.text,textF4.text];
     NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
-    [body setObject:@"17326831803" forKey:@"phone"];
+    [body setObject:_phone forKey:@"phone"];
     [body setObject:code forKey:@"code"];
     
     
@@ -132,26 +132,28 @@
 //    NSError *error;
 //    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:0 error:&error];
 ////    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-//
-////    [[CommonNetworkManager share] postWithUrl:@"/ai/hidouserinfo/register" body:jsonData success:^(NSDictionary * _Nonnull response) {
-////
-////        } failure:^(NSError * _Nonnull error) {
-////
-////        }];
-//
-    [LoginNetWork registerUserWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
-        if (ResponseSuccess) {
-            PerfectInfoController *vc = [[PerfectInfoController alloc] init];
-            [self.navigationController pushViewController:vc animated:YES];
-        }else{
-            [SVProgressHUD showInfoWithStatus:[NSString stringForId:@""]];
-        }
-        } andFailerFn:^(NSError * _Nonnull error) {
 
-        }];
+//    WS(weakSelf);
+//    [SVProgressHUD show];
+//    [LoginNetWork registerUserWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+//        [SVProgressHUD dismiss];
+//        if (ResponseSuccess) {
+//            PerfectInfoController *vc = [[PerfectInfoController alloc] init];
+//            vc.phone = weakSelf.phone;
+//            [self.navigationController pushViewController:vc animated:YES];
+//        }else{
+////            [SVProgressHUD showInfoWithStatus:[NSString stringForId:responseBefore[@"msg"]]];
+//
+//            PerfectInfoController *vc = [[PerfectInfoController alloc] init];
+//            vc.phone = weakSelf.phone;
+//            [self.navigationController pushViewController:vc animated:YES];
+//        }
+//        } andFailerFn:^(NSError * _Nonnull error) {
+//
+//        }];
     
-//    PerfectInfoController *vc = [[PerfectInfoController alloc] init];
-//    [self.navigationController pushViewController:vc animated:YES];
+    PerfectInfoController *vc = [[PerfectInfoController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
     
 }
 

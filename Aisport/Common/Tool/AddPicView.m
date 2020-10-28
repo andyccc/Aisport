@@ -351,7 +351,16 @@
     {
         NSMutableDictionary* body = [NSMutableDictionary dictionaryWithCapacity:0];
         [body setObject:@"123" forKey:@"file"];
-        [[CommonNetworkManager share] AFUPIMAGENetworkWithUrl:@"upload/uploadImage" andBody:body andData:UIImagePNGRepresentation(dArr[index]) andSuccess:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        NSData *data = UIImageJPEGRepresentation(dArr[idx], .3);
+        [[CommonNetworkManager share] AFUPIMAGENetworkWithUrl:@"ai/upload/uploadImage" andBody:body andData:data andSuccess:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+            /*
+             code = 0;
+             data = "https://pub.hidbb.com/ai-dev/ai/f0147104ccdf4e17bce01eb5875a36bb.jpeg";
+             msg = "<null>";
+             */
+            [self.picUrlArr addObject:responseAfter];
+            idx = idx+1;
+            [self upLoadImg:dArr and:idx];
                     
                 } andFailer:^(NSError * _Nonnull error) {
                     

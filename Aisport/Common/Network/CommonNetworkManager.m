@@ -213,7 +213,8 @@
 -(void)AFUPIMAGENetworkWithUrl:(NSString *)url andBody:(NSMutableDictionary *)body andData:(NSData*)data andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
 {
     [self setRequestSerializer];
-    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
+//    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+//    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
 
     if([url isEqualToString:@"trade/execute_barcode_trade"])
     {
