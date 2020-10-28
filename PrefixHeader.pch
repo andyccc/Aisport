@@ -1,0 +1,18 @@
+//
+//  PrefixHeader.pch
+//  Turenstore
+//
+//  Created by 田桔 on 2019/3/19.
+//  Copyright © 2019 田桔. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#ifdef __OBJC__
+
+#import "Header.h"
+#import "Defines.h"
+
+#endif
+#endif /* PrefixHeader_pch */
