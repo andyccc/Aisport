@@ -76,7 +76,6 @@ class ActionDetectorSelector:NSObject{
             os_log("Cannot get inference result.", type: .error)
             return nil
         }
-        
         kpRes.seconds=seconds
         
         //根据时间来获取大动作分析器
