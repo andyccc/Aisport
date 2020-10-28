@@ -45,8 +45,8 @@ enum ActionEnum{
                                                            MotionEnum.StepWalkRight])
     static let LegStretch=Action(name:"LEG STRETCH",motions:  [MotionEnum.SideShuffleToLeft,
                                                                MotionEnum.SideShuffleToRight])
-    static let Hip4Squat1=Action(name:"4X HIP 1X SQUAT",motions:  [MotionEnum.SideShuffleToLeft,
-                                                                   MotionEnum.SideShuffleToRight])
+    static let Hip4Squat1=Action(name:"4X HIP 1X SQUAT",motions:  [MotionEnum.SquatDown,
+                                                                   MotionEnum.SquatUp])
     static let StepBackSqueeze=Action(name:"STEP+BACK SQUEEZE",motions:  [MotionEnum.StepRightOut,
                                                                           MotionEnum.StepRightIn,
                                                                           MotionEnum.StepLeftOut,
@@ -75,7 +75,10 @@ enum ActionEnum{
                                                            MotionEnum.StepLeftIn])
     static let StepArmCombo=Action(name:"STEP+ARM COMBO",motions:  [MotionEnum.ArmsOpen,
                                                                     MotionEnum.ArmsBack])
-    static let SlideBoxFrontReach=Action(name:"SLIDE+BOX+FRONT REACH",motions:  [])
+    static let SlideBoxFrontReach=Action(name:"SLIDE+BOX+FRONT REACH",motions:  [MotionEnum.StepRightOut,
+                                                                                 MotionEnum.StepRightIn,
+                                                                                 MotionEnum.StepLeftOut,
+                                                                                 MotionEnum.StepLeftIn])
     static let SquatHold=Action(name:"SQUAT HOLD",motions:  [MotionEnum.SquatDown,
                                                              MotionEnum.SquatUp])
     static let SlideOverheadClap=Action(name:"SLIDE+OVERHEAD CLAP",motions:  [MotionEnum.StepRightOut,

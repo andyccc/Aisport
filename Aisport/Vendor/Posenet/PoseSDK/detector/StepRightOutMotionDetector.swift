@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreImage
 
 class StepRightOutMotionDetector:BaseMotionDetector{
         

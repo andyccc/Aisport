@@ -45,49 +45,49 @@
 - (void)setMainView
 {
     
-    UITableView *mainView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, SCR_HIGHT-SafeAreaTopHeight) style:UITableViewStyleGrouped];
+    UITableView *mainView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, SCR_HIGHT-SafeAreaTopHeight) style:UITableViewStylePlain];
     [self.view addSubview:mainView];
     mainView.delegate = self;
     mainView.dataSource = self;
-    mainView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    mainView.separatorStyle = UITableViewCellSeparatorStyleNone;
     mainView.estimatedRowHeight = 0;
     mainView.estimatedSectionFooterHeight = 0;
     mainView.estimatedSectionHeaderHeight = 0;
     _mainView = mainView;
     
     
-    _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 254*2*Screen_Scale)];
-    [self.view addSubview:_bannerImageView];
-    _bannerImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _bannerImageView.clipsToBounds = YES;
-    _bannerImageView.image = [UIImage imageNamed:@"home_banner"];
+//    _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 254*2*Screen_Scale)];
+//    [self.view addSubview:_bannerImageView];
+//    _bannerImageView.contentMode = UIViewContentModeScaleAspectFill;
+//    _bannerImageView.clipsToBounds = YES;
+//    _bannerImageView.image = [UIImage imageNamed:@"home_banner"];
+//    
+//    
+//    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCR_WIDTH/2-150/2, StatusHeight + 7, 150, 30)];
+//    [_bannerImageView addSubview:titleLabel];
+//    titleLabel.textAlignment = NSTextAlignmentCenter;
+//    titleLabel.textColor = [UIColor whiteColor];
+//    titleLabel.font = fontBold(16);
+//    titleLabel.text = @"嗨动AI";
     
     
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCR_WIDTH/2-150/2, StatusHeight + 7, 150, 30)];
-    [_bannerImageView addSubview:titleLabel];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.font = fontBold(16);
-    titleLabel.text = @"嗨动AI";
-    
-    
-    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, _bannerImageView.bottom-14*2*Screen_Scale, SCR_WIDTH, SCR_HIGHT-_bannerImageView.bottom+14*2*Screen_Scale)];
-    [self.view addSubview:bottomView];
-    bottomView.backgroundColor = [UIColor whiteColor];
-    
-    CAShapeLayer *mask=[CAShapeLayer layer];
-    UIBezierPath * path = [UIBezierPath bezierPathWithRoundedRect:bottomView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft  cornerRadii:CGSizeMake(16,16)];
-    mask.path = path.CGPath;
-    mask.frame = bottomView.bounds;
-    
-    CAShapeLayer *borderLayer = [CAShapeLayer layer];
-    borderLayer.path = path.CGPath;
-    borderLayer.fillColor = [UIColor clearColor].CGColor;
-    //        borderLayer.strokeColor = [UIColor colorWithHex:@"#FDAB00"].CGColor;
-    //        borderLayer.lineWidth = 1;
-    borderLayer.frame = bottomView.bounds;
-    bottomView.layer.mask = mask;
-    [bottomView.layer addSublayer:borderLayer];
+//    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, _bannerImageView.bottom-14*2*Screen_Scale, SCR_WIDTH, SCR_HIGHT-_bannerImageView.bottom+14*2*Screen_Scale)];
+//    [self.view addSubview:bottomView];
+//    bottomView.backgroundColor = [UIColor whiteColor];
+//
+//    CAShapeLayer *mask=[CAShapeLayer layer];
+//    UIBezierPath * path = [UIBezierPath bezierPathWithRoundedRect:bottomView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft  cornerRadii:CGSizeMake(16,16)];
+//    mask.path = path.CGPath;
+//    mask.frame = bottomView.bounds;
+//
+//    CAShapeLayer *borderLayer = [CAShapeLayer layer];
+//    borderLayer.path = path.CGPath;
+//    borderLayer.fillColor = [UIColor clearColor].CGColor;
+//    //        borderLayer.strokeColor = [UIColor colorWithHex:@"#FDAB00"].CGColor;
+//    //        borderLayer.lineWidth = 1;
+//    borderLayer.frame = bottomView.bounds;
+//    bottomView.layer.mask = mask;
+//    [bottomView.layer addSublayer:borderLayer];
     
     
     
@@ -103,12 +103,18 @@
     return 2;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self btnAction];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"TaskHomeListViewCell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"TaskHomeListViewCell"];
     }
+//    cell.backgroundColor = [UIColor redColor];
 //    cell.type = _type;
 //    TaskHomeModel *model = _dataSource[indexPath.row];
 //    cell.model = model;
@@ -116,6 +122,11 @@
 //    cell.deleteBtn.hidden = YES;
     
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
 }
 
 - (void)btnAction
