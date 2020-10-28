@@ -1,0 +1,137 @@
+PODS:
+  - AFNetworking (4.0.1):
+    - AFNetworking/NSURLSession (= 4.0.1)
+    - AFNetworking/Reachability (= 4.0.1)
+    - AFNetworking/Security (= 4.0.1)
+    - AFNetworking/Serialization (= 4.0.1)
+    - AFNetworking/UIKit (= 4.0.1)
+  - AFNetworking/NSURLSession (4.0.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (4.0.1)
+  - AFNetworking/Security (4.0.1)
+  - AFNetworking/Serialization (4.0.1)
+  - AFNetworking/UIKit (4.0.1):
+    - AFNetworking/NSURLSession
+  - JSONModel (1.8.0)
+  - libextobjc (0.6):
+    - libextobjc/EXTADT (= 0.6)
+    - libextobjc/EXTConcreteProtocol (= 0.6)
+    - libextobjc/EXTKeyPathCoding (= 0.6)
+    - libextobjc/EXTNil (= 0.6)
+    - libextobjc/EXTSafeCategory (= 0.6)
+    - libextobjc/EXTScope (= 0.6)
+    - libextobjc/EXTSelectorChecking (= 0.6)
+    - libextobjc/EXTSynthesize (= 0.6)
+    - "libextobjc/NSInvocation+EXT (= 0.6)"
+    - "libextobjc/NSMethodSignature+EXT (= 0.6)"
+    - libextobjc/RuntimeExtensions (= 0.6)
+    - libextobjc/UmbrellaHeader (= 0.6)
+  - libextobjc/EXTADT (0.6):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTConcreteProtocol (0.6):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTKeyPathCoding (0.6):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTNil (0.6):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTSafeCategory (0.6):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTScope (0.6):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTSelectorChecking (0.6):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTSynthesize (0.6):
+    - libextobjc/RuntimeExtensions
+  - "libextobjc/NSInvocation+EXT (0.6)":
+    - libextobjc/RuntimeExtensions
+  - "libextobjc/NSMethodSignature+EXT (0.6)":
+    - libextobjc/RuntimeExtensions
+  - libextobjc/RuntimeExtensions (0.6)
+  - libextobjc/UmbrellaHeader (0.6)
+  - Masonry (1.1.0)
+  - Reachability (3.2)
+  - SDWebImage (5.9.4):
+    - SDWebImage/Core (= 5.9.4)
+  - SDWebImage/Core (5.9.4)
+  - SQLiteRepairKit (1.2.2):
+    - WCDBOptimizedSQLCipher (~> 1.2.0)
+  - SVProgressHUD (2.2.5)
+  - TensorFlowLiteC (2.3.0):
+    - TensorFlowLiteC/Core (= 2.3.0)
+  - TensorFlowLiteC/Core (2.3.0)
+  - TensorFlowLiteC/CoreML (2.3.0):
+    - TensorFlowLiteC/Core
+  - TensorFlowLiteC/Metal (2.3.0):
+    - TensorFlowLiteC/Core
+  - TensorFlowLiteSwift/Core (2.3.0):
+    - TensorFlowLiteC (= 2.3.0)
+  - TensorFlowLiteSwift/CoreML (2.3.0):
+    - TensorFlowLiteC/CoreML (= 2.3.0)
+    - TensorFlowLiteSwift/Core (= 2.3.0)
+  - TensorFlowLiteSwift/Metal (2.3.0):
+    - TensorFlowLiteC/Metal (= 2.3.0)
+    - TensorFlowLiteSwift/Core (= 2.3.0)
+  - TZImagePickerController (1.9.8)
+  - WCDB (1.0.7.5):
+    - SQLiteRepairKit (~> 1.2.0)
+    - WCDBOptimizedSQLCipher (~> 1.2.0)
+  - WCDBOptimizedSQLCipher (1.2.1)
+  - YSWCDBService (1.0.6):
+    - WCDB
+
+DEPENDENCIES:
+  - AFNetworking (= 4.0.1)
+  - JSONModel (= 1.8.0)
+  - libextobjc (= 0.6)
+  - Masonry (= 1.1.0)
+  - Reachability (= 3.2)
+  - SDWebImage (= 5.9.4)
+  - SVProgressHUD (= 2.2.5)
+  - TensorFlowLiteSwift/Core (from `./ThirdLibs/TensorFlow/TensorFlowLiteSwift.podspec.json`)
+  - TensorFlowLiteSwift/CoreML (from `./ThirdLibs/TensorFlow/TensorFlowLiteSwift.podspec.json`)
+  - TensorFlowLiteSwift/Metal (from `./ThirdLibs/TensorFlow/TensorFlowLiteSwift.podspec.json`)
+  - TZImagePickerController (= 1.9.8)
+  - YSWCDBService (from `./ThirdLibs/YSWCDBService`)
+
+SPEC REPOS:
+  trunk:
+    - AFNetworking
+    - JSONModel
+    - libextobjc
+    - Masonry
+    - Reachability
+    - SDWebImage
+    - SQLiteRepairKit
+    - SVProgressHUD
+    - TensorFlowLiteC
+    - TZImagePickerController
+    - WCDB
+    - WCDBOptimizedSQLCipher
+
+EXTERNAL SOURCES:
+  TensorFlowLiteSwift:
+    :podspec: "./ThirdLibs/TensorFlow/TensorFlowLiteSwift.podspec.json"
+  YSWCDBService:
+    :path: "./ThirdLibs/YSWCDBService"
+
+SPEC CHECKSUMS:
+  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  JSONModel: 02ab723958366a3fd27da57ea2af2113658762e9
+  libextobjc: aed8b7d2b07f511c1a7ecaacb33ea03e327c69b7
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  SDWebImage: b69257f4ab14e9b6a2ef53e910fdf914d8f757c1
+  SQLiteRepairKit: 35aaae5a8838adb85f5b1eb4d796055be6060a4b
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  TensorFlowLiteC: 51f50caf5777f740a70e2c1a5dbdc149e7aeb50b
+  TensorFlowLiteSwift: 208a117d8e8cc19b00301ab0df9948a3d6abd134
+  TZImagePickerController: 3b9413ae5d049b1fdc5b0c720ad283f35b679a50
+  WCDB: 8e90babdeb7784c569353a4bd22a66c0a175a882
+  WCDBOptimizedSQLCipher: baf44493b0c7a3d49e97bc5b64a3856f6428ddd1
+  YSWCDBService: e3fb13c7762e8d32622ea53f75b6b0c17180aec2
+
+PODFILE CHECKSUM: d778b3dce08c655148b891f9d0df13f1c70445d8
+
+COCOAPODS: 1.9.3
