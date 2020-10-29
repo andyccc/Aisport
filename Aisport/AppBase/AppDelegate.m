@@ -10,6 +10,7 @@
 #import "BaseNavigationController.h"
 #import "LoginOrRegisterController.h"
 #import "MineViewController.h"
+#import "WCDBService.h"
 
 @interface AppDelegate ()
 
@@ -21,6 +22,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    [self initConfig];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -48,6 +51,13 @@
     return YES;
 }
 
+- (void)initConfig
+{
+    // 配置数据库并启动
+    NSString *loginedUserId = @"123";
+    
+    [WCDBService setDBName:loginedUserId];
+}
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
