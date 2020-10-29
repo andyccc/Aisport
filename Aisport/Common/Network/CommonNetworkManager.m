@@ -34,13 +34,11 @@
         manager = [[AFHTTPSessionManager manager] initWithBaseURL:[NSURL URLWithString:Host_Url]];
         
         manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",@"text/json", @"text/plain", @"text/html",@"application/x-www-form-urlencoded",@"application/octet-stream",nil];
-        manager.responseSerializer.stringEncoding = kCFStringEncodingUTF8;
+//        manager.responseSerializer.stringEncoding = kCFStringEncodingUTF8;
         manager.requestSerializer = [AFHTTPRequestSerializer serializer];
+        manager.requestSerializer.stringEncoding = kCFStringEncodingUTF8;
         
-        
-        [manager.requestSerializer
-         setValue:@"application/x-www-form-urlencoded;charset=utf-8"
-         forHTTPHeaderField:@"Content-Type"];
+        [manager.requestSerializer setValue:@"application/x-www-form-urlencoded;charset=utf-8" forHTTPHeaderField:@"Content-Type"];
         [manager.requestSerializer setValue:[IphoneDevice deviceVersion] forHTTPHeaderField:@"deviceType"];
         [manager.requestSerializer setValue:[SystemMethods SystemGetSoftVersion] forHTTPHeaderField:@"deviceVersion"];
         [manager.requestSerializer setValue:@"2" forHTTPHeaderField:@"loginTerminalType"];
@@ -121,14 +119,13 @@
     
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
     
-    [manager GET:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
+    [manager GET:url parameters:body headers:@{} progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
     }];
-    
     
 }
 
@@ -149,14 +146,23 @@
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
     NSLog(@"body--%@,url---%@",body,url);
     
-//    [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:[NSString stringWithFormat:@"%@/%@",Host_Url,url] parameters:body error:nil];
-    [manager POST:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
+    [manager POST:url parameters:body headers:@{} progress:^(NSProgress * _Nonnull uploadProgress) {
+        
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [SVProgressHUD dismiss];
         [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
     }];
+    
+//    [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:[NSString stringWithFormat:@"%@/%@",Host_Url,url] parameters:body error:nil];
+//    [manager POST:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
+//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//        [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
+//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        [SVProgressHUD dismiss];
+//        [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
+//    }];
 
 }
 
@@ -234,7 +240,7 @@
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
     //    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
-    [manager POST:url parameters:body constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    [manager POST:url parameters:body headers:@{} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         [formData appendPartWithFileData:data name:@"file" fileName:@"xxx.jpeg" mimeType:@"image/jpeg"];
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         
@@ -244,7 +250,19 @@
         [SVProgressHUD dismiss];
         [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
     }];
-//    [manager POST:url parameters:body headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    
+//    [manager POST:url parameters:body constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+//        [formData appendPartWithFileData:data name:@"file" fileName:@"xxx.jpeg" mimeType:@"image/jpeg"];
+//    } progress:^(NSProgress * _Nonnull uploadProgress) {
+//
+//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//        [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
+//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        [SVProgressHUD dismiss];
+//        [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
+//    }];
+
+    //    [manager POST:url parameters:body headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
 //        [formData appendPartWithFileData:data name:@"file" fileName:@"xxx.jpeg" mimeType:@"image/jpeg"];
 //        } progress:^(NSProgress * _Nonnull uploadProgress) {
 //
@@ -351,7 +369,7 @@
 - (void)setRequestSerializer
 {
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",@"text/json", @"text/plain", @"text/html",@"application/x-www-form-urlencoded",@"application/octet-stream",nil];
-    manager.responseSerializer.stringEncoding = kCFStringEncodingUTF8;
+//    manager.responseSerializer.stringEncoding = kCFStringEncodingUTF8;
     manager.requestSerializer = [AFHTTPRequestSerializer serializer];
 }
 
@@ -374,6 +392,24 @@
     [manager setRequestSerializer:[AFJSONRequestSerializer serializer]];
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"application/json"];
     NSString *url = [NSString stringWithFormat:@"%@/upload/uploadImage",Host_Url];
+    
+    [manager POST:url parameters:nil headers:@{} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        [formData appendPartWithFileData:imageData name:@"file" fileName:@"test.png" mimeType:@"image/png"];//name必填file否则报错：参数缺失
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+        if ([code isEqualToString:@"0"]) {
+            successBlock(YES,responseObject);
+        }else{
+            //            [[DMCAlertCenter defaultCenter] postAlertWithMessage:responseObject[@"msg"]];
+            successBlock(NO,nil);
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        successBlock(NO,nil);
+    }];
+    
+    /*
     [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         [formData appendPartWithFileData:imageData name:@"file" fileName:@"test.png" mimeType:@"image/png"];//name必填file否则报错：参数缺失
     } progress:^(NSProgress * _Nonnull uploadProgress) {
@@ -391,7 +427,7 @@
         successBlock(NO,nil);
 //        [[DMCAlertCenter defaultCenter] postAlertWithMessage:@"网络错误"];
     }];
-    
+    */
 }
 
 //#pragma mark - 6.2 上传永久图片

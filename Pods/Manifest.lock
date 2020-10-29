@@ -14,6 +14,7 @@ PODS:
   - AFNetworking/Serialization (4.0.1)
   - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
+  - AutoCoding (2.2.3)
   - JSONModel (1.8.0)
   - libextobjc (0.6):
     - libextobjc/EXTADT (= 0.6)
@@ -79,6 +80,7 @@ PODS:
     - WCDBOptimizedSQLCipher (~> 1.2.0)
   - WCDBOptimizedSQLCipher (1.2.1)
   - YSWCDBService (1.0.6):
+    - AutoCoding
     - WCDB
 
 DEPENDENCIES:
@@ -98,6 +100,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AFNetworking
+    - AutoCoding
     - JSONModel
     - libextobjc
     - Masonry
@@ -118,6 +121,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  AutoCoding: 90ca3cbc0d77a37cfff75167d705b44148c5fc51
   JSONModel: 02ab723958366a3fd27da57ea2af2113658762e9
   libextobjc: aed8b7d2b07f511c1a7ecaacb33ea03e327c69b7
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
@@ -130,7 +134,7 @@ SPEC CHECKSUMS:
   TZImagePickerController: 3b9413ae5d049b1fdc5b0c720ad283f35b679a50
   WCDB: 8e90babdeb7784c569353a4bd22a66c0a175a882
   WCDBOptimizedSQLCipher: baf44493b0c7a3d49e97bc5b64a3856f6428ddd1
-  YSWCDBService: e3fb13c7762e8d32622ea53f75b6b0c17180aec2
+  YSWCDBService: f1444e233ff1df655ab033b5e96ef6e05483c843
 
 PODFILE CHECKSUM: d778b3dce08c655148b891f9d0df13f1c70445d8
 
