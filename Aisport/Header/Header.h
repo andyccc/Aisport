@@ -9,6 +9,9 @@
 //#ifndef UniversalProject_Header_h
 #define UniversalProject_Header_h
 
+#import "BaseNavigationController.h"
+#import "MSTabBarController.h"
+
 //基础定义
 #import "UIView+Addition.h"
 #import "UIColor+MSExtension.h"
@@ -16,15 +19,22 @@
 #import "UIButton+ImageTitleSpacing.h"
 #import "NSString+cheekContent.h"
 #import "UIButton+Background.h"
+#import "UIImageView+WebCache.h"
 
 #import "BaseViewController.h"
+#import "JXRefreshHeader.h"
+#import "JXRefreshFooter.h"
 
 
 //第三方框架
 #import <Masonry/Masonry.h>
 #import "SVProgressHUD.h"
+#import "GVUserDefaults.h"
+#import "GVUserDefaults+PropertyList.h"
 
 //#import "MSNavigationController.h"
+
+#import "CourseModel.h"
 
 
 

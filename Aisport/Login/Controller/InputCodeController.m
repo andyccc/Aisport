@@ -9,10 +9,15 @@
 #import "PerfectInfoController.h"
 #import "LoginNetWork.h"
 #import "CommonNetworkManager.h"
+#import "CodeTextField.h"
 
-@interface InputCodeController ()
+@interface InputCodeController ()<UITextFieldDelegate,CodeTextFieldDelegate>
 
 @property (nonatomic, strong) NSMutableArray *numberTFArray;
+@property (nonatomic, assign) NSInteger index;
+@property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, assign) long second;
+@property (nonatomic, strong) UIButton *reGetCodeBtn;
 
 @end
 
@@ -22,6 +27,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     [self setMainView];
+    [self startCountDown];
     // Do any additional setup after loading the view.
 }
 
@@ -59,7 +65,7 @@
     _numberTFArray = [NSMutableArray arrayWithCapacity:0];
     CGFloat codeW = (SCR_WIDTH - 46*2*Screen_Scale*2 - 25*3)/4;
     for (int i = 0; i < 4; i++) {
-        UITextField *codeTF = [[UITextField alloc] initWithFrame:CGRectMake(46*2*Screen_Scale+(codeW+25)*i, subLabel.bottom+41, codeW, codeW)];
+        CodeTextField *codeTF = [[CodeTextField alloc] initWithFrame:CGRectMake(46*2*Screen_Scale+(codeW+25)*i, subLabel.bottom+41, codeW, codeW)];
         [self.view addSubview:codeTF];
         codeTF.backgroundColor = [UIColor colorWithHex:@"#F5F5F5"];
         codeTF.textColor = [UIColor colorWithHex:@"#333333"];
@@ -68,7 +74,10 @@
         codeTF.textAlignment = NSTextAlignmentCenter;
         codeTF.layer.cornerRadius = 2;
         codeTF.clipsToBounds = YES;
+        codeTF.tag = i;
         codeTF.keyboardType = UIKeyboardTypeNumberPad;
+        codeTF.delegate = self;
+        codeTF.keyInputDelegate = self;
         
         [_numberTFArray addObject:codeTF];
         [codeTF addTarget:self action:@selector(textFieldEditingChanged:) forControlEvents:UIControlEventEditingChanged];
@@ -95,6 +104,7 @@
     [reGetCodeBtn setTitleColor:[UIColor colorWithHex:@"#666666"] forState:UIControlStateNormal];
     reGetCodeBtn.titleLabel.font = fontApp(13);
     [reGetCodeBtn addTarget:self action:@selector(clickReGetCodeBtn) forControlEvents:UIControlEventTouchUpInside];
+    _reGetCodeBtn = reGetCodeBtn;
 }
 
 - (void)clickSureCodeBtn
@@ -118,8 +128,21 @@
     }
     NSString *code = [NSString stringWithFormat:@"%@%@%@%@",textF1.text,textF2.text,textF3.text,textF4.text];
     NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
-    [body setObject:_phone forKey:@"phone"];
     [body setObject:code forKey:@"code"];
+    
+    
+//    PerfectInfoController *vc = [[PerfectInfoController alloc] init];
+//    vc.phone = _phone;
+//    [self.navigationController pushViewController:vc animated:YES];
+    
+    if ([StringForId(_status) isEqual:@"0"]) {
+        [body setObject:_phone forKey:@"phone"];
+        [self registerUserClickWithBody:body];
+    }else{
+        [body setObject:[NSString stringWithFormat:@"SMS@%@",_phone] forKey:@"mobile"];
+        [body setObject:@"mobile" forKey:@"grant_type"];
+        [self loginUserClickWithBody:body];
+    }
     
     
 //    [[CommonNetworkManager share] postWithUrl:@"ai/hidouserinfo/register" body:body success:^(NSDictionary * _Nonnull response) {
@@ -133,39 +156,181 @@
 //    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:0 error:&error];
 ////    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 
-//    WS(weakSelf);
-//    [SVProgressHUD show];
-//    [LoginNetWork registerUserWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
-//        [SVProgressHUD dismiss];
-//        if (ResponseSuccess) {
+    
+    
+   
+    
+}
+
+- (void)loginUserClickWithBody:(NSMutableDictionary *)body
+{
+    WS(weakSelf);
+    [LoginNetWork loginUserWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        /*
+         "access_token" = "30a8a1d2-e28f-4850-8d75-ef06c1fad72d";  //首次token
+         active = 1;
+         "expires_in" = 43093;
+         license = "made by pamir";
+         "refresh_token" = "66455f00-2a7b-49ae-adf9-5f5e7177220d";  //token失效，可替换token
+         scope = server;
+         "token_type" = bearer;
+         "user_info" =     {
+             accountNonExpired = 1;
+             accountNonLocked = 1;
+             authorities =         (
+                             {
+                     authority = "ROLE_4";
+                 }
+             );
+             avatar = "<null>";
+             credentialsNonExpired = 1;
+             deptId = 9;
+             enabled = 1;
+             id = 440;
+             password = "<null>";
+             phone = 17326831803;
+             tenantId = 1;
+             username = 17326831803;
+         };
+         */
+        if ([StringForId(responseBefore[@"access_token"]) isEqual:@""]) {
+            [SVProgressHUD showInfoWithStatus:@"登陆失败"];
+            return;
+        }
+        [GVUserDefaults standardUserDefaults].access_token = StringForId(responseBefore[@"access_token"]);
+        [GVUserDefaults standardUserDefaults].refresh_token = StringForId(responseBefore[@"refresh_token"]);
+        [GVUserDefaults standardUserDefaults].phone = StringForId(responseBefore[@"user_info"][@"phone"]);
+//        [GVUserDefaults standardUserDefaults].username = StringForId(responseBefore[@"username"]);
+//        [GVUserDefaults standardUserDefaults].username = StringForId(responseBefore[@"username"]);
+        
+        if ([StringForId(weakSelf.status) isEqual:@"0"]) {
+            PerfectInfoController *vc = [[PerfectInfoController alloc] init];
+            vc.phone = weakSelf.phone;
+            [self.navigationController pushViewController:vc animated:YES];
+        }else{
+            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+                [self.navigationController popViewControllerAnimated:NO];
+            }];
+        }
+        
+        
+            
+        } andFailerFn:^(NSError * _Nonnull error) {
+            
+    }];
+}
+
+- (void)registerUserClickWithBody:(NSMutableDictionary *)body
+{
+    WS(weakSelf);
+    [SVProgressHUD show];
+    [LoginNetWork registerUserWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        [SVProgressHUD dismiss];
+        if (ResponseSuccess) {
+            
+//            vc.phone = weakSelf.phone;
+////            [[NSUserDefaults standardUserDefaults] setValue:@"" forKey:@"token"];
+//            [self.navigationController pushViewController:vc animated:YES];
+            [body setObject:[NSString stringWithFormat:@"SMS@%@",weakSelf.phone] forKey:@"mobile"];
+            [body setObject:@"mobile" forKey:@"grant_type"];
+            [body removeObjectForKey:@"phone"];
+            [weakSelf loginUserClickWithBody:body];
+        }else{
+//            [SVProgressHUD showInfoWithStatus:[NSString stringForId:responseBefore[@"msg"]]];
+
 //            PerfectInfoController *vc = [[PerfectInfoController alloc] init];
 //            vc.phone = weakSelf.phone;
 //            [self.navigationController pushViewController:vc animated:YES];
-//        }else{
-////            [SVProgressHUD showInfoWithStatus:[NSString stringForId:responseBefore[@"msg"]]];
-//
-//            PerfectInfoController *vc = [[PerfectInfoController alloc] init];
-//            vc.phone = weakSelf.phone;
-//            [self.navigationController pushViewController:vc animated:YES];
-//        }
-//        } andFailerFn:^(NSError * _Nonnull error) {
-//
-//        }];
-    
-    PerfectInfoController *vc = [[PerfectInfoController alloc] init];
-    [self.navigationController pushViewController:vc animated:YES];
-    
+        }
+        } andFailerFn:^(NSError * _Nonnull error) {
+
+        }];
 }
 
 - (void)clickReGetCodeBtn
 {
-    
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    [body setObject:_phone forKey:@"phone"];
+    [SVProgressHUD show];
+    [LoginNetWork checkUserIdWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        if (ResponseSuccess) {
+            //data(responseAfter) 0无账号无用户信息,1有账号无用户信息,2有账号并且有用户信息
+            if ([StringForId(responseAfter) isEqual:@"0"]) {
+                [self getRegisterCode];
+//                    [self getSendSmsCode];
+            }else if ([StringForId(responseAfter) isEqual:@"1"]){
+                [self getSendSmsCode];
+            }else if ([StringForId(responseAfter) isEqual:@"2"]){
+                [self getSendSmsCode];
+            }
+        }
+    } andFailerFn:^(NSError * _Nonnull error) {
+        [SVProgressHUD dismiss];
+    }];
 }
 
 - (void)backButtonClick
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    NSLog(@"textFieldDidBeginEditing--%@",textField.text);
+}
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    NSLog(@"textFieldDidEndEditing--%@",textField.text);
+}
+
+- (void)textFieldDidChangeSelection:(UITextField *)textField
+{
+    NSLog(@"textFieldDidChangeSelection--%@",textField.text);
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+
+    UITextField *textF1 = self.numberTFArray[0];
+    UITextField *textF2 = self.numberTFArray[1];
+    UITextField *textF3 = self.numberTFArray[2];
+    UITextField *textF4 = self.numberTFArray[3];
+    if (textField == textF4) {
+        if (textField.text.length >= 1 && ![string isEqual:@""]) {
+            return NO;
+        }
+    }else if (textField == textF3){
+        if (textField.text.length >= 1 && ![string isEqual:@""]) {
+            [textF4 becomeFirstResponder];
+            self.index = textF4.tag;
+            return NO;
+        }
+    }else if (textField == textF2){
+        if (textField.text.length >= 1 && ![string isEqual:@""]) {
+            [textF3 becomeFirstResponder];
+            self.index = textF3.tag;
+            return NO;
+        }
+    }else if (textField == textF1){
+        if (textField.text.length >= 1 && ![string isEqual:@""]) {
+            [textF2 becomeFirstResponder];
+            self.index = textF2.tag;
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (void)deleteBackward
+{
+    UITextField *currentTF = self.numberTFArray[self.index];
+    if (currentTF.text.length < 1 && self.index != 0) {
+        UITextField *nextTF = self.numberTFArray[self.index-1];
+        self.index--;
+        [nextTF becomeFirstResponder];
+    }
+}
+
 
 - (void)textFieldEditingChanged :(UITextField *)textField
 {
@@ -177,27 +342,31 @@
     if (textField == textF1) {
         if (textF1.text.length >= 1) {
             [textF2 becomeFirstResponder];
+            self.index = textF2.tag;
         }else{
-            [textF1 becomeFirstResponder];
+//            [textF1 becomeFirstResponder];
         }
     }else if (textField == textF2){
         if (textF2.text.length >= 1) {
             [textF3 becomeFirstResponder];
+            self.index = textF3.tag;
         }else{
-            [textF1 becomeFirstResponder];
+//            [textF1 becomeFirstResponder];
         }
     }else if (textField == textF3){
         if (textF3.text.length >= 1) {
             [textF4 becomeFirstResponder];
+            self.index = textF4.tag;
         }else{
-            [textF2 becomeFirstResponder];
+//            [textF2 becomeFirstResponder];
         }
     }else if (textField == textF4){
         if (textF4.text.length < 1) {
-            [textF3 becomeFirstResponder];
+//            [textF3 becomeFirstResponder];
         }
     }
 }
+
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -215,6 +384,93 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [self.view endEditing:YES];
+}
+
+-(void)startCountDown
+{
+    _second = 60;
+    if (!_timer) {
+        _timer  = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(changeTimeBtn) userInfo:nil repeats:YES];
+    }
+    [_timer fire];
+}
+
+-(void)changeTimeBtn
+{
+    if(_second <= 0)
+    {
+        _reGetCodeBtn.userInteractionEnabled = YES;
+//        self.layer.borderColor = mainColor.CGColor;
+//        self.backgroundColor = [UIColor clearColor];
+        [_reGetCodeBtn setTitle:@"获取验证码" forState:UIControlStateNormal];
+//        [self setTitleColor:textColor_333333 forState:UIControlStateNormal];
+        [self invalidateTimer];
+        
+    }else
+    {
+        _reGetCodeBtn.userInteractionEnabled = NO;
+//        self.layer.borderColor = textColor_CCCCCC.CGColor;
+//        self.backgroundColor = textColor_CCCCCC;
+        [_reGetCodeBtn setTitle:[NSString stringWithFormat:@"重新获取(%ld）",_second] forState:UIControlStateNormal];
+//        [self setTitleColor:textColor_999999 forState:UIControlStateNormal];
+        _second --;
+    }
+}
+
+- (void)invalidateTimer
+{
+    if (_timer) {
+        [_timer invalidate];
+        _timer = nil;
+    }
+}
+
+
+
+#pragma mark - net
+- (void)getRegisterCode
+{
+    WS(weakSelf);
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    [body setObject:_phone forKey:@"mobile"];
+    [LoginNetWork getPostCodeWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        [SVProgressHUD dismiss];
+        /*
+         code = 0;
+         data = 1;
+         msg = "\U5f53\U524d\U6a21\U62df\U5f00\U5173\U5f00\U542f,\U9a8c\U8bc1\U7801\U4e3a: 1803";
+         */
+        if (ResponseSuccess) {
+//            InputCodeController *vc = [[InputCodeController alloc] init];
+//            vc.phone = weakSelf.phoneTF.text;
+//            vc.status = @"0";
+//            [self.navigationController pushViewController:vc animated:YES];
+//            weakSelf.status = StringForId(responseAfter);
+            [weakSelf startCountDown];
+        }
+        } andFailerFn:^(NSError * _Nonnull error) {
+
+        }];
+
+}
+
+- (void)getSendSmsCode
+{
+    WS(weakSelf);
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    [body setObject:_phone forKey:@"mobile"];
+    [LoginNetWork getGetCodeWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        if (ResponseSuccess) {
+//            InputCodeController *vc = [[InputCodeController alloc] init];
+//            vc.phone = weakSelf.phoneTF.text;
+//            vc.status = @"2";
+//            [self.navigationController pushViewController:vc animated:YES];
+//            weakSelf.status = StringForId(responseAfter);
+            [weakSelf startCountDown];
+        }
+        } andFailerFn:^(NSError * _Nonnull error) {
+            
+        }];
 }
 
 /*

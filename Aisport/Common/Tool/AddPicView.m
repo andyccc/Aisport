@@ -216,6 +216,7 @@
         
         //        _updateImageView.image = photos[0];
         [allPics addObjectsFromArray:photos];
+        [SVProgressHUD show];
         [self upLoadImg:allPics and:0];
         
     }];
@@ -358,7 +359,7 @@
              data = "https://pub.hidbb.com/ai-dev/ai/f0147104ccdf4e17bce01eb5875a36bb.jpeg";
              msg = "<null>";
              */
-            [self.picUrlArr addObject:responseAfter];
+            [self.picUrlArr addObject:StringForId(responseAfter[@"url"])];
             idx = idx+1;
             [self upLoadImg:dArr and:idx];
                     

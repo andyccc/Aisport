@@ -10,16 +10,130 @@
 #import "LoadingSourceView.h"
 #import "Aisport-Swift.h"
 #import "CommonWebController.h"
+#import "ASTrainNetwork.h"
+#import "HomeListModel.h"
+#import "NSString+getHeight.h"
+
+#import "CourseShareView.h"
+#import "ShowShareBtnView.h"
+#import "WechatShareManager.h"
+#import "CourseModel.h"
 
 
 @interface TRClassDetailViewController ()
 
+@property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) LoadingSourceView *loadingSourceView;
+@property (nonatomic, strong) UIImageView *picImageView;
+@property (nonatomic, strong) UILabel *introLabel;
 @property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, strong) HomeListModel *model;
+@property (nonatomic, strong) NSMutableArray *titleLabArr;
+
+@property (nonatomic, strong) CourseShareView *courseShareView;
+@property (nonatomic, strong) ShowShareBtnView *showShareBtnView;
+
+@property (nonatomic, strong) CourseModel *courseModel;
 
 @end
 
 @implementation TRClassDetailViewController
+
+- (CourseShareView *)courseShareView
+{
+    if (!_courseShareView) {
+        _courseShareView = [[CourseShareView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, SCR_HIGHT)];
+        _courseShareView.backgroundColor = [UIColor colorWithHex:@"6d6d6f"];
+    }
+    return _courseShareView;
+}
+
+- (void)removeCourseShareView
+{
+    for (UIView *view in self.courseShareView.subviews) {
+        [view removeFromSuperview];
+    }
+    
+    [self.courseShareView removeFromSuperview];
+    self.courseShareView = nil;
+}
+
+- (ShowShareBtnView *)showShareBtnView
+{
+    if (!_showShareBtnView) {
+        _showShareBtnView = [[ShowShareBtnView alloc] initWithFrame:CGRectMake(0, SCR_HIGHT, SCR_WIDTH, 141)];
+        WS(weakSelf);
+        _showShareBtnView.clickShareBlock = ^(NSInteger index) {
+            [weakSelf handleShareWechatWithIndex:index];
+            [weakSelf.navigationController setNavigationBarHidden:NO animated:NO];
+            [weakSelf dismissSharetView];
+        };
+    }
+    return _showShareBtnView;
+}
+
+- (void)handleShareWechatWithIndex:(NSInteger)index
+{
+    UIImage *image = [self imageWithUIView:self.courseShareView];
+    if (index > 0) {
+        [[WechatShareManager shareInstance] shareImageToWechatWithImage:image AndShareType:index-1];
+    }else{
+        [self saveShareCourseImage];
+    }
+    
+}
+
+- (UIImage*)imageWithUIView:(UIView*)view
+
+{
+    UIGraphicsBeginImageContext(view.bounds.size);
+
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    [view.layer renderInContext:context];
+
+    UIImage* tImage = UIGraphicsGetImageFromCurrentImageContext();
+
+    UIGraphicsEndImageContext();
+
+    return tImage;
+
+}
+
+
+
+-(void)showShareView
+{
+    WS(weakSelf);
+    [UIView animateWithDuration:.3 animations:^{
+        weakSelf.showShareBtnView.transform = CGAffineTransformMake(1, 0, 0, 1, 0, -140);
+    } completion:nil];
+}
+
+-(void)dismissSharetView
+{
+    WS(weakSelf);
+    [UIView animateWithDuration:.2 animations:^{
+        weakSelf.showShareBtnView.transform = CGAffineTransformMake(1, 0, 0, 1, 0, 0);
+    } completion:^(BOOL finished) {
+        if(finished)
+        {
+            for (UIView *view in weakSelf.showShareBtnView.subviews) {
+                [view removeFromSuperview];
+            }
+            weakSelf.showShareBtnView = nil;
+            [weakSelf removeCourseShareView];
+        }
+    }];
+}
+
+- (NSMutableArray *)titleLabArr
+{
+    if (!_titleLabArr) {
+        _titleLabArr = [NSMutableArray arrayWithCapacity:0];
+    }
+    return _titleLabArr;
+}
 
 - (LoadingSourceView *)loadingSourceView
 {
@@ -37,7 +151,10 @@
 
 - (void)removeLoadingView
 {
-    for (UIView *view in self.loadingSourceView.subviews) {
+    if (!_loadingSourceView) {
+        return;
+    }
+    for (UIView *view in _loadingSourceView.subviews) {
         [view removeFromSuperview];
     }
     
@@ -56,39 +173,53 @@
     [self setMainView];
 
  
-    UIButton *rightBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 40, 50)];
-    [rightBtn setTitle:@"动作" forState:UIControlStateNormal];
-    [rightBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    UIButton *shareBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 40, 50)];
+    [shareBtn setImage:[UIImage imageNamed:@"train_share"] forState:UIControlStateNormal];
+//    [shareBtn setImage:[UIImage imageNamed:@"train_share"] forState:UIControlStateNormal];
     
-    UIButton *rightBtn1 = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 40, 50)];
-    [rightBtn1 setTitle:@"web" forState:UIControlStateNormal];
-    [rightBtn1 setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    UIButton *collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 40, 50)];
+    [collectBtn setImage:[UIImage imageNamed:@"train_collect"] forState:UIControlStateNormal];
+//    [collectBtn setTitle:@"web" forState:UIControlStateNormal];
+//    [collectBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
     
-    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
-    UIBarButtonItem *rightItem1 = [[UIBarButtonItem alloc] initWithCustomView:rightBtn1];
+    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:shareBtn];
+    UIBarButtonItem *rightItem1 = [[UIBarButtonItem alloc] initWithCustomView:collectBtn];
     
     self.navigationItem.rightBarButtonItems = @[rightItem,rightItem1];;
-    [rightBtn addTarget:self action:@selector(rightBtnClick) forControlEvents:UIControlEventTouchUpInside];
-    [rightBtn1 addTarget:self action:@selector(rightBtn1Click1) forControlEvents:UIControlEventTouchUpInside];
+    [shareBtn addTarget:self action:@selector(shareBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [collectBtn addTarget:self action:@selector(collectBtnClick) forControlEvents:UIControlEventTouchUpInside];
     
     
     // Do any additional setup after loading the view.
 }
 
-- (void)rightBtnClick
+- (void)viewWillAppear:(BOOL)animated
 {
-    //测试动作界面
-    TestController *vc = [[TestController alloc] init];
-    [self.navigationController pushViewController:vc animated:YES];
+    [super viewWillAppear:animated];
+    [self getCourseDetail];
 }
 
-- (void)rightBtn1Click1
+- (void)shareBtnClick
 {
-    //web界面
-    CommonWebController *vc = [[CommonWebController alloc] init];
-    vc.title = @"web标题";
-    vc.url = @"https://uat-biz.hidbb.com/";
-    [self.navigationController pushViewController:vc animated:YES];
+//    //测试动作界面
+//    TestController *vc = [[TestController alloc] init];
+//    [self.navigationController pushViewController:vc animated:YES];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
+    [self.view addSubview:self.courseShareView];
+    [self.view addSubview:self.showShareBtnView];
+    [self showShareView];
+    
+}
+
+- (void)collectBtnClick
+{
+//    //web界面
+//    CommonWebController *vc = [[CommonWebController alloc] init];
+//    vc.title = @"web标题";
+//    vc.url = @"https://uat-biz.hidbb.com/";
+//    [self.navigationController pushViewController:vc animated:YES];
+    
+    [self postCollectCourse];
 }
 
 #pragma mark - setMainUI
@@ -96,13 +227,16 @@
 {
     UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, SCR_HIGHT-60)];
     [self.view addSubview:scrollView];
+    _scrollView = scrollView;
     
     UIImageView *picImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 246*2*Screen_Scale)];
     [scrollView addSubview:picImageView];
     picImageView.contentMode = UIViewContentModeScaleAspectFill;
     picImageView.image = [UIImage imageNamed:@"train_classbanner"];
     picImageView.clipsToBounds = YES;
+    _picImageView = picImageView;
     
+    [self.titleLabArr removeAllObjects];
     NSArray *numArr = @[@"44",@"4673",@"33"];
     NSArray *titleArr = @[@"累计播放",@"历史成绩",@"累计消耗千卡"];
     for (int i = 0; i < numArr.count; i++) {
@@ -112,6 +246,7 @@
         numberLab.font = fontBold(19);
         numberLab.textAlignment = NSTextAlignmentCenter;
         numberLab.text = numArr[i];
+        [self.titleLabArr addObject:numberLab];
         
         UILabel *numTiLab = [[UILabel alloc] initWithFrame:CGRectMake(SCR_WIDTH/3*i, numberLab.bottom+6, SCR_WIDTH/3, 10)];
         [scrollView addSubview:numTiLab];
@@ -142,20 +277,44 @@
     introLabel.numberOfLines = 0;
 //    introLabel.textAlignment = NSTextAlignmentCenter;
     introLabel.text = introStr;
+    _introLabel = introLabel;
     
     
-    UIView *prepareBgView = [[UIView alloc] initWithFrame:CGRectMake(0, introLabel.bottom, SCR_WIDTH, 38)];
+    //WithFrame:CGRectMake(0, introLabel.bottom, SCR_WIDTH, 38)
+    UIView *prepareBgView = [[UIView alloc] init];
     [scrollView addSubview:prepareBgView];
+    [prepareBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(scrollView.mas_left).offset(0);
+        make.top.equalTo(introLabel.mas_bottom).offset(0);
+        make.width.mas_equalTo(SCR_WIDTH);
+        make.height.mas_equalTo(38);
+    }];
     prepareBgView.backgroundColor = [UIColor colorWithHex:@"#F2F2F2"];
     
-    UILabel *prepareBgLab = [[UILabel alloc] initWithFrame:CGRectMake(16, 0, prepareBgView.width-32, prepareBgView.height)];
+    
+    //WithFrame:CGRectMake(16, 0, prepareBgView.width-32, prepareBgView.height)
+    UILabel *prepareBgLab = [[UILabel alloc] init];
     [prepareBgView addSubview:prepareBgLab];
+    [prepareBgLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(prepareBgView.mas_left).offset(16);
+        make.top.equalTo(prepareBgView.mas_top).offset(0);
+        make.width.mas_equalTo(SCR_WIDTH-32);
+        make.height.mas_equalTo(38);
+    }];
     prepareBgLab.textColor = [UIColor colorWithHex:@"#333333"];
     prepareBgLab.font = fontBold(13);
     prepareBgLab.text = @"课前准备";
     
-    UILabel *prepareLab1 = [[UILabel alloc] initWithFrame:CGRectMake(28, prepareBgView.bottom+10, SCR_WIDTH-28-16, 24)];
+    
+    //WithFrame:CGRectMake(28, prepareBgView.bottom+10, SCR_WIDTH-28-16, 24)
+    UILabel *prepareLab1 = [[UILabel alloc] init];
     [scrollView addSubview:prepareLab1];
+    [prepareLab1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(scrollView.mas_left).offset(28);
+        make.top.equalTo(prepareBgView.mas_bottom).offset(10);
+        make.width.mas_equalTo(SCR_WIDTH-28-16);
+        make.height.mas_equalTo(24);
+    }];
     prepareLab1.textColor = [UIColor colorWithHex:@"#333333"];
     prepareLab1.font = fontApp(12);
     prepareLab1.numberOfLines = 0;
@@ -173,8 +332,15 @@
     signView1.layer.cornerRadius = 3;
     signView1.clipsToBounds = YES;
     
-    UILabel *prepareLab2 = [[UILabel alloc] initWithFrame:CGRectMake(28, prepareLab1.bottom, SCR_WIDTH-28-16, 24)];
+    //WithFrame:CGRectMake(28, prepareLab1.bottom, SCR_WIDTH-28-16, 24)
+    UILabel *prepareLab2 = [[UILabel alloc] init];
     [scrollView addSubview:prepareLab2];
+    [prepareLab2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(scrollView.mas_left).offset(28);
+        make.top.equalTo(prepareLab1.mas_bottom).offset(0);
+        make.width.mas_equalTo(SCR_WIDTH-28-16);
+        make.height.mas_equalTo(24);
+    }];
     prepareLab2.textColor = [UIColor colorWithHex:@"#333333"];
     prepareLab2.font = fontApp(12);
     prepareLab2.numberOfLines = 0;
@@ -192,8 +358,15 @@
     signView2.layer.cornerRadius = 3;
     signView2.clipsToBounds = YES;
     
-    UILabel *prepareLab3 = [[UILabel alloc] initWithFrame:CGRectMake(28, prepareLab2.bottom, SCR_WIDTH-28-16, 24)];
+    //WithFrame:CGRectMake(28, prepareLab2.bottom, SCR_WIDTH-28-16, 24)
+    UILabel *prepareLab3 = [[UILabel alloc] init];
     [scrollView addSubview:prepareLab3];
+    [prepareLab3 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(scrollView.mas_left).offset(28);
+        make.top.equalTo(prepareLab2.mas_bottom).offset(0);
+        make.width.mas_equalTo(SCR_WIDTH-28-16);
+        make.height.mas_equalTo(24);
+    }];
     prepareLab3.textColor = [UIColor colorWithHex:@"#333333"];
     prepareLab3.font = fontApp(12);
     prepareLab3.numberOfLines = 0;
@@ -229,29 +402,69 @@
     }];
 }
 
+- (void)updataCourseView
+{
+    [_picImageView sd_setImageWithURL:[NSURL URLWithString:StringForId(_model.detailCover)] placeholderImage:nil];
+    for (int i = 0; i < self.titleLabArr.count; i++) {
+        UILabel *label = self.titleLabArr[i];
+        if (i == 0) {
+            label.text = StringNumForId(_model.playTotal, @"0");
+        }else if (i == 1){
+            label.text = StringNumForId(_model.highScore, @"0");
+        }else if (i == 2){
+            label.text = StringNumForId(_model.calorieTotal, @"0");
+        }
+    }
+    
+    CGFloat introH = [NSString getHeightWithText:StringForId(_model.content) andWithWidth:SCR_WIDTH-32 andWithFont:fontApp(12)];
+    _introLabel.height = introH+18+27;
+    _introLabel.text = StringForId(_model.content);
+    
+    _scrollView.contentSize = CGSizeMake(SCR_WIDTH, _introLabel.bottom+38+10+24*3);
+}
+
 
 #pragma mark - Button
 - (void)startTrans
 {
+//    [GVUserDefaults standardUserDefaults].total = @"2350000";
+//    [GVUserDefaults standardUserDefaults].complate = @"0";
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    [body setObject:_codeId forKey:@"courseCode"];
+    [[CommonNetworkManager share] getVideoByCourseWithUrl:@"ai/video/getVideoByCourse" andBody:body andSuccess:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        if (ResponseSuccess) {
+            CourseModel *model = [[CourseModel alloc] init];
+            model.name = StringForId(responseAfter[@"name"]);
+            model.url = StringForId(responseAfter[@"url"]);
+            _courseModel = model;
+        }
+    } andFailer:^(NSError * _Nonnull error) {
+        
+    } andProgress:^(double value) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self progressSimulationWithProgress:value];
+        });
+       
+        
+    }];
+    
     [self.view addSubview:self.loadingSourceView];
-    
-    
-    
-    // 模拟下载进度
-    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(progressSimulation) userInfo:self repeats:YES];
-    _timer = timer;
+//    // 模拟下载进度
+//    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(progressSimulation) userInfo:self repeats:YES];
+//    _timer = timer;
 }
 
-- (void)progressSimulation
+- (void)progressSimulationWithProgress:(double)progress
 {
-    static CGFloat progress = 1.0;
+//    static CGFloat progress = 1.0;
     
     if (progress < 1.0) {
-        progress += 0.01;
+//        progress += 0.01;
         
         // 循环
 //        if (progress >= 1.0) progress = 0;
-        
+        NSLog(@"%f",progress);;
         self.loadingSourceView.progressView.progress = progress;
 //        [self.demoViews enumerateObjectsUsingBlock:^(SDDemoItemView *demoView, NSUInteger idx, BOOL *stop) {
 //            demoView.progressView.progress = progress;
@@ -261,7 +474,81 @@
         [self removeLoadingView];
         
         TRPlayVideoViewController *vc = [[TRPlayVideoViewController alloc] init];
+        vc.courseModel = _courseModel;
         [self.navigationController pushViewController:vc animated:YES];
+    }
+}
+
+#pragma mark - Network
+- (void)getCourseDetail
+{
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    [body setObject:_codeId forKey:@"code"];
+    WS(weakSelf);
+    [SVProgressHUD show];
+    [ASTrainNetwork getByCourseCodeDetailWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        [SVProgressHUD dismiss];
+        if (ResponseSuccess) {
+            weakSelf.model = [[HomeListModel alloc] initWithDictionary:responseAfter error:nil];
+            [weakSelf updataCourseView];
+        }else{
+            [SVProgressHUD showInfoWithStatus:StringForId(responseBefore[@"msg"])];
+        }
+    } andFailerFn:^(NSError * _Nonnull error) {
+        
+    }];
+}
+
+- (void)postCollectCourse
+{
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    [body setObject:_codeId forKey:@"code"];
+    NSLog(@"%@",[GVUserDefaults standardUserDefaults].access_token);
+    [SVProgressHUD show];
+    [ASTrainNetwork postCollectSwitchCourseWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        [SVProgressHUD dismiss];
+        if (ResponseSuccess) {
+            
+        }else{
+            [SVProgressHUD showInfoWithStatus:StringForId(responseBefore[@"msg"])];
+        }
+    } andFailerFn:^(NSError * _Nonnull error) {
+        
+    }];
+}
+
+#pragma mark - 保存相册
+- (void)saveShareCourseImage
+{
+    UIGraphicsBeginImageContextWithOptions(self.courseShareView.frame.size, NO, [UIScreen mainScreen].scale);
+    [self.courseShareView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    //保存完后调用的方法
+    SEL selector = @selector(onCompleteCapture:didFinishSavingWithError:contextInfo:);
+    //保存
+    UIImageWriteToSavedPhotosAlbum(snapshotImage, self, selector, NULL);
+}
+
+
+
+
+//图片保存完后调用的方法
+- (void)onCompleteCapture:(UIImage *)screenImage didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+{
+    if (error){
+        //保存失败
+#ifdef DEBUG
+        [SVProgressHUD showInfoWithStatus:@"保存相册失败"];
+        //                NSLog(@"屏幕截图保存相册失败：%@",error);
+#endif
+    }else {
+        //保存成功
+#ifdef DEBUG
+        [SVProgressHUD showInfoWithStatus:@"保存相册成功"];
+        //                NSLog(@"屏幕截图保存相册成功");
+#endif
     }
 }
 

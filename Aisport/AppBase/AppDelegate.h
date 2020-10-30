@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UIWindow *window;
 
 @property (nonatomic,strong) BaseNavigationController* loginNav;
+@property (strong, nonatomic) MSTabBarController* baseTabbar;
 
 
 @end

@@ -90,9 +90,14 @@
     self.detectType = 0;
     
     
-    NSString *urlPath = [[NSBundle mainBundle] pathForResource:@"全身激活练习" ofType:@"mp4"];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *mediaUrl = [NSString stringWithFormat:@"%@.mp4",StringForId(_courseModel.name)];
+    NSString  *fullPath = [NSString stringWithFormat:@"%@/%@", documentsDirectory, mediaUrl];
+//    NSString *urlPath = [[NSBundle mainBundle] pathForResource:StringForId(_courseModel.name) ofType:@"mp4"];
 
-    NSURL *url = [NSURL fileURLWithPath:urlPath];
+//    NSURL *videoURL = [NSURL fileURLWithPath:fullPath];
+    NSURL *url = [NSURL fileURLWithPath:fullPath];
     
 //    NSURL *url = [NSURL URLWithString:@"https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4"];
     self.player = [AVPlayer playerWithURL:url];
@@ -712,7 +717,8 @@
 {
     [self.navigationController dismissViewControllerAnimated:NO completion:^{
         UIViewController *viewC = [UIApplication sharedApplication].keyWindow.rootViewController;
-        BaseNavigationController *navC = (BaseNavigationController *)viewC;
+        MSTabBarController *tabbarVC = (MSTabBarController *)viewC;
+        BaseNavigationController *navC = tabbarVC.childViewControllers[0];
         ASTrainReportController *vc = [[ASTrainReportController alloc] init];
         [navC pushViewController:vc animated:YES];
     }];

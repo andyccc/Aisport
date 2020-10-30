@@ -135,28 +135,24 @@
 //        vc.phone = @"17326831803";
 //        [self.navigationController pushViewController:vc animated:YES];
         
-        [self.navigationController dismissViewControllerAnimated:YES completion:^{
-    //        [self.navigationController popViewControllerAnimated:NO];
+        NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+        [body setObject:_phoneTF.text forKey:@"phone"];
+        [SVProgressHUD show];
+        [LoginNetWork checkUserIdWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+            if (ResponseSuccess) {
+                //data(responseAfter) 0无账号无用户信息,1有账号无用户信息,2有账号并且有用户信息
+                if ([StringForId(responseAfter) isEqual:@"0"]) {
+                    [self getRegisterCode];
+//                    [self getSendSmsCode];
+                }else if ([StringForId(responseAfter) isEqual:@"1"]){
+                    [self getSendSmsCode];
+                }else if ([StringForId(responseAfter) isEqual:@"2"]){
+                    [self getSendSmsCode];
+                }
+            }
+        } andFailerFn:^(NSError * _Nonnull error) {
+            [SVProgressHUD dismiss];
         }];
-        
-//        NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
-//        [body setObject:_phoneTF.text forKey:@"phone"];
-//        [SVProgressHUD show];
-//        [LoginNetWork checkUserIdWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
-//            if (ResponseSuccess) {
-//                //data(responseAfter) 0无账号无用户信息,1有账号无用户信息,2有账号并且有用户信息
-//                if ([StringForId(responseAfter) isEqual:@"0"]) {
-//                    [self getRegisterCode];
-////                    [self getSendSmsCode];
-//                }else if ([StringForId(responseAfter) isEqual:@"1"]){
-//                    [self getSendSmsCode];
-//                }else if ([StringForId(responseAfter) isEqual:@"2"]){
-//                    [self getSendSmsCode];
-//                }
-//            }
-//                } andFailerFn:^(NSError * _Nonnull error) {
-//                    [SVProgressHUD dismiss];
-//                }];
     }
     
 }
@@ -176,11 +172,12 @@
         if (ResponseSuccess) {
             InputCodeController *vc = [[InputCodeController alloc] init];
             vc.phone = weakSelf.phoneTF.text;
+            vc.status = @"0"; //StringForId(responseAfter)
             [self.navigationController pushViewController:vc animated:YES];
         }
-        } andFailerFn:^(NSError * _Nonnull error) {
+    } andFailerFn:^(NSError * _Nonnull error) {
 
-        }];
+    }];
 
 }
 
@@ -193,11 +190,12 @@
         if (ResponseSuccess) {
             InputCodeController *vc = [[InputCodeController alloc] init];
             vc.phone = weakSelf.phoneTF.text;
+            vc.status = @"1";
             [self.navigationController pushViewController:vc animated:YES];
         }
-        } andFailerFn:^(NSError * _Nonnull error) {
-            
-        }];
+    } andFailerFn:^(NSError * _Nonnull error) {
+        
+    }];
 }
 
 - (void)clickWeChatBtn

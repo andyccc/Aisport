@@ -32,10 +32,28 @@
 
 +(void)loginUserWith:(NSMutableDictionary *)body  AndSuccessFn:(serverSuccessFn)successFn andFailerFn:(serverFailureFn)failerFn
 {
-    [[LoginNetWork share] AFPOSTNetworkWithUrl:@"auth/mobile/token/sms" andBody:body andSuccess:successFn andFailer:failerFn];
+    [[LoginNetWork share] AFPOSTBodyTNetworkWithUrl:@"auth/mobile/token/sms" andBody:body andSuccess:successFn andFailer:failerFn];
 }
 
++(void)completeUserInfoWith:(NSMutableDictionary *)body AndSuccessFn:(serverSuccessFn)successFn andFailerFn:(serverFailureFn)failerFn
+{
+//    [[LoginNetWork share] AFPOSTBodyTNetworkWithUrl:@"ai/hidouserinfo/complete" andBody:body andSuccess:successFn andFailer:failerFn];
+    
+    [[LoginNetWork share] AFPOSTBodyHeadTNetworkWithUrl:@"ai/hidouserinfo/complete" HeaderToken:[GVUserDefaults standardUserDefaults].access_token andBody:body andSuccess:successFn andFailer:failerFn];
 
+}
+
++(void)fixUserInfoWith:(NSMutableDictionary *)body AndSuccessFn:(serverSuccessFn)successFn andFailerFn:(serverFailureFn)failerFn
+{
+    
+    [[LoginNetWork share] AFPOSTBodyHeadTNetworkWithUrl:@"ai/hidouserinfo/editInfo" HeaderToken:[GVUserDefaults standardUserDefaults].access_token andBody:body andSuccess:successFn andFailer:failerFn];
+
+}
+
++(void)getUserInfoWith:(NSMutableDictionary *)body  AndSuccessFn:(serverSuccessFn)successFn andFailerFn:(serverFailureFn)failerFn
+{
+    [[LoginNetWork share] AFGETHeadTNetworkWithUrl:@"ai/hidouserinfo/getInfo" HeaderToken:[GVUserDefaults standardUserDefaults].access_token andBody:body andSuccess:successFn andFailer:failerFn];
+}
 
 + (void)smsCodeNetworkWithValue:(NSString *)value
 {

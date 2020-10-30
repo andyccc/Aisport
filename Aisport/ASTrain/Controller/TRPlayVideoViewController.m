@@ -208,6 +208,7 @@
     
 
     TRAIPlayVideoViewController *vc = [[TRAIPlayVideoViewController alloc] init];
+    vc.courseModel = _courseModel;
     BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:vc];
     [self.navigationController presentViewController:nav animated:YES completion:nil];
 

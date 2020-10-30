@@ -10,6 +10,9 @@
 //#ifndef UniversalProject_Defines_h
 #define UniversalProject_Defines_h
 
+//H5界面主地址
+#define Host_Url_Web @"https://uat-aih5.hidbb.com/#/"
+
 //设备类型
 #define DEVICETYPE_IPHONE 0
 #define DEVICETYPE_IPHONE5 1
@@ -17,7 +20,6 @@
 
 //程序总委托
 #define appDelegate ((AppDelegate *)[[UIApplication sharedApplication] delegate])
-
 
 
 //日志调试

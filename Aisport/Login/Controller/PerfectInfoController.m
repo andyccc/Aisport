@@ -8,12 +8,15 @@
 #import "PerfectInfoController.h"
 #import "AddPicView.h"
 #import "ZBImagePicker.h"
+#import "LoginNetWork.h"
 
 @interface PerfectInfoController ()
 
 @property (nonatomic, strong) UIButton *manButton;
 @property (nonatomic, strong) UIButton *womanButton;
 @property (nonatomic, strong) NSString *headPicUrl;
+@property (nonatomic, strong) UITextField *nickNameTF;
+@property (nonatomic, strong) UIImageView *iconImageView;
 
 @end
 
@@ -33,6 +36,8 @@
     [self.view addSubview:iconImageView];
     iconImageView.image = [UIImage imageNamed:@"login_addPic"];
     iconImageView.contentMode = UIViewContentModeScaleAspectFill;
+    iconImageView.clipsToBounds = YES;
+    _iconImageView = iconImageView;
     
     UIButton *addHeadPicBtn = [[UIButton alloc] initWithFrame:CGRectMake(SCR_WIDTH/2-88*Screen_Scale, SafeAreaTopHeight+21, 88*2*Screen_Scale, 92*2*Screen_Scale)];
     [self.view addSubview:addHeadPicBtn];
@@ -54,6 +59,7 @@
     nickNameTF.textAlignment = NSTextAlignmentCenter;
     nickNameTF.layer.cornerRadius = 48/2;
     nickNameTF.clipsToBounds = YES;
+    _nickNameTF = nickNameTF;
     
     UILabel *sexTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(26, nickNameTF.bottom+60, SCR_WIDTH-26*2, 16)];
     [self.view addSubview:sexTitleLabel];
@@ -118,6 +124,8 @@
     WS(weakSelf);
     [[AddPicView shareAddPicView] addPicViewWithPicCount:1 ViewController:self IsCrop:NO AddPicBlock:^(NSArray * _Nonnull picUrlArr) {
         weakSelf.headPicUrl = picUrlArr[0];
+        [weakSelf.iconImageView sd_setImageWithURL:[NSURL URLWithString:StringForId(picUrlArr[0])] placeholderImage:nil];
+        
     }];
     
 //    ZBImagePicker *zbimagePicker = [ZBImagePicker imagePicker];
@@ -154,9 +162,49 @@
 - (void)clickSureInfoBtn
 {
     [self.view endEditing:YES];
-    [self.navigationController dismissViewControllerAnimated:YES completion:^{
-//        [self.navigationController popViewControllerAnimated:NO];
-    }];
+//    [self.navigationController dismissViewControllerAnimated:YES completion:^{
+//        [self.navigationController popToRootViewControllerAnimated:NO];
+//    }];
+    
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    if ([StringForId(_headPicUrl) isEqual:@""]) {
+        [SVProgressHUD showInfoWithStatus:@"请选择头像"];
+        return;
+    }
+    [body setObject:_phone forKey:@"phone"];
+    [body setObject:_headPicUrl forKey:@"cover"];
+    if ([StringForId(_nickNameTF.text) isEqual:@""]) {
+        [SVProgressHUD showInfoWithStatus:@"请输入昵称"];
+        return;
+    }
+    [body setObject:_nickNameTF.text forKey:@"nickName"];
+
+    //0 男。1 女
+    if (_manButton.selected) {
+        [body setObject:@"0" forKey:@"sex"];
+    }else if (_womanButton.selected){
+        [body setObject:@"1" forKey:@"sex"];
+    }else{
+        [SVProgressHUD showInfoWithStatus:@"请选择性别"];
+        return;
+    }
+
+    [SVProgressHUD show];
+    [LoginNetWork completeUserInfoWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        [SVProgressHUD dismiss];
+        if (ResponseSuccess) {
+            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+                [self.navigationController popToRootViewControllerAnimated:NO];
+            }];
+        }else
+        {
+            [SVProgressHUD showInfoWithStatus:[NSString stringForId:responseBefore[@"msg"]]];
+        }
+        } andFailerFn:^(NSError * _Nonnull error) {
+
+        }];
+    
+    
 }
 
 

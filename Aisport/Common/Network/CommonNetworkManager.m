@@ -15,6 +15,9 @@
 
 @implementation CommonNetworkManager{
     AFHTTPSessionManager *manager;
+    NSMutableDictionary *sizeDic;
+    long long totalSize;
+    long long number;
 }
 
 +(CommonNetworkManager *)share{
@@ -98,6 +101,11 @@
 -(void)LogFailerResponse:(NSError*)error
                 failerFn:(serverFailureFn)failerFn
 {
+    if ([StringForId([GVUserDefaults standardUserDefaults].access_token) isEqual:@""]) {
+        [SVProgressHUD dismiss];
+        failerFn(error);
+        return;
+    }
     DebugLog(@"---rop is--- %ld --- %@",(long)error.code,error.userInfo);
     if(error.code == -1001)
     {
@@ -132,11 +140,42 @@
     
 }
 
+-(void)AFGETHeadTNetworkWithUrl:(NSString *)url HeaderToken:(NSString *)headerToken andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
+{
+    [self AFGETHeadTNetworkWithUrl:url Header:@"authorization" HeaderValue:[NSString stringWithFormat:@"Bearer %@",headerToken] andBody:body andSuccess:successFn andFailer:failerFn];
+}
+
+-(void)AFGETHeadTNetworkWithUrl:(NSString *)url Header:(NSString *)header HeaderValue:(NSString *)headValue andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
+{
+    [self setRequestSerializer];
+    
+    [manager.requestSerializer setValue:headValue forHTTPHeaderField:header];
+
+    if([url isEqualToString:@"trade/execute_barcode_trade"])
+    {
+        manager.requestSerializer.timeoutInterval = 20.f;
+    }else
+    {
+        manager.requestSerializer.timeoutInterval = 10.f;
+    }
+
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    
+    [manager GET:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
+    }];
+}
+
 -(void)AFPOSTNetworkWithUrl:(NSString *)url andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
 {
 //    [self setRequestSerializer];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
     
     if([url isEqualToString:@"trade/execute_barcode_trade"])
     {
@@ -160,28 +199,108 @@
 
 }
 
-//-(void)AFPOSHTTPResponseTNetworkWithUrl:(NSString *)url andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
-//{
+//AFHTTPRequestSerializer格式参数
+-(void)AFPOSTBodyTNetworkWithUrl:(NSString *)url andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
+{
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/html", @"text/plain", nil];
+//    //post 发送json格式数据的时候加上这两句。
 //    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-//    [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-//    if([url isEqualToString:@"trade/execute_barcode_trade"])
-//    {
-//        manager.requestSerializer.timeoutInterval = 20.f;
-//    }else
-//    {
-//        manager.requestSerializer.timeoutInterval = 10.f;
-//    }
-//
-//    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-//    NSLog(@"body--%@,url---%@",body,url);
-//    [manager POST:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        [[ABNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        [SVProgressHUD dismiss];
-//        [[ABNetworkManager share] LogFailerResponse:error failerFn:failerFn];
-//    }];
-//}
+//    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    
+    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",@"text/json", @"text/plain", @"text/html",@"application/x-www-form-urlencoded",@"application/octet-stream",nil];
+    manager.responseSerializer.stringEncoding = kCFStringEncodingUTF8;
+    
+    [manager.requestSerializer setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:@"Basic dGVzdDp0ZXN0" forHTTPHeaderField:@"Authorization"];
+
+    if([url isEqualToString:@"trade/execute_barcode_trade"])
+    {
+        manager.requestSerializer.timeoutInterval = 20.f;
+    }else
+    {
+        manager.requestSerializer.timeoutInterval = 10.f;
+    }
+
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    NSLog(@"body--%@,url---%@",body,url);
+    [manager POST:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [SVProgressHUD dismiss];
+        [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
+    }];
+}
+
+
+//AFJSONResponseSerializer格式参数
+-(void)AFPOSTBodyHeadTNetworkWithUrl:(NSString *)url HeaderToken:(NSString *)headerToken andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
+{
+    [self AFPOSTBodyHeadTNetworkWithUrl:url Header:@"authorization" HeaderValue:[NSString stringWithFormat:@"Bearer %@",headerToken] andBody:body andSuccess:successFn andFailer:failerFn];
+}
+
+-(void)AFPOSTBodyHeadTNetworkWithUrl:(NSString *)url Header:(NSString *)header HeaderValue:(NSString *)headValue andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
+{
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/html", @"text/plain", nil];
+    //post 发送json格式数据的时候加上这两句。
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    [manager.requestSerializer setValue:headValue forHTTPHeaderField:header];
+
+    if([url isEqualToString:@"trade/execute_barcode_trade"])
+    {
+        manager.requestSerializer.timeoutInterval = 20.f;
+    }else
+    {
+        manager.requestSerializer.timeoutInterval = 10.f;
+    }
+
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    NSLog(@"body--%@,url---%@",body,url);
+    [manager POST:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [SVProgressHUD dismiss];
+        [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
+    }];
+}
+
+//AFHTTPRequestSerializer格式参数，带token
+-(void)AFPOSTHTTPHeadTNetworkWithUrl:(NSString *)url HeaderToken:(NSString *)headerToken andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
+{
+    [self AFPOSTHTTPHeadTNetworkWithUrl:url Header:@"authorization" HeaderValue:[NSString stringWithFormat:@"Bearer %@",headerToken] andBody:body andSuccess:successFn andFailer:failerFn];
+}
+
+-(void)AFPOSTHTTPHeadTNetworkWithUrl:(NSString *)url Header:(NSString *)header HeaderValue:(NSString *)headValue andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
+{
+    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",@"text/json", @"text/plain", @"text/html",@"application/x-www-form-urlencoded",@"application/octet-stream",nil];
+    manager.responseSerializer.stringEncoding = kCFStringEncodingUTF8;
+    
+    [manager.requestSerializer setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [manager.requestSerializer setValue:headValue forHTTPHeaderField:header];
+
+    if([url isEqualToString:@"trade/execute_barcode_trade"])
+    {
+        manager.requestSerializer.timeoutInterval = 20.f;
+    }else
+    {
+        manager.requestSerializer.timeoutInterval = 10.f;
+    }
+
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    NSLog(@"body--%@,url---%@",body,url);
+    [manager POST:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [SVProgressHUD dismiss];
+        [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
+    }];
+}
+
 //
 //-(void)AFUPLOADNetworkWithUrl:(NSString *)url andBody:(NSMutableDictionary *)body andfilePath:(NSString*)filePath andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn
 //{
@@ -356,6 +475,91 @@
     manager.requestSerializer = [AFHTTPRequestSerializer serializer];
 }
 
+#pragma mark - 6.1 下载进度
+- (void)getVideoByCourseWithUrl:(NSString *)url andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn andProgress:(serverProgressFn)progressFn
+{
+    number = 0;
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    sizeDic = [NSMutableDictionary dictionaryWithCapacity:0];
+    [manager GET:url parameters:body progress:^(NSProgress * _Nonnull uploadProgress) {
+        NSLog(@"%lld",uploadProgress.totalUnitCount);
+        NSLog(@"%lld",uploadProgress.completedUnitCount);
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[CommonNetworkManager share] LogSuccessResponse:responseObject successFn:successFn];
+        
+        long long total = (long long)[responseObject[@"data"][@"totalSize"] doubleValue]*1000;
+        [GVUserDefaults standardUserDefaults].total = [NSString stringWithFormat:@"%lld",total];
+        self->totalSize = total;
+        dispatch_semaphore_t dispatch_semaphore_create(long value);
+        [self downLoadVideoAndAudioWithUrl:responseObject[@"data"][@"url"] UrlName:responseObject[@"data"][@"name"] andProgress:progressFn IsVideo:YES];
+        self->number += 1;
+        for (NSDictionary *urlDic in responseObject[@"data"][@"nodeVoiceList"]) {
+            [self downLoadVideoAndAudioWithUrl:urlDic[@"url"] UrlName:urlDic[@"name"] andProgress:progressFn IsVideo:NO];
+            self->number += 1;
+        }
+        
+         
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [[CommonNetworkManager share] LogFailerResponse:error failerFn:failerFn];
+    }];
+    /*
+     size = "2441.42";
+     time = 32;
+     totalSize = "2606.42";
+     */
+}
+
+- (void)downLoadVideoAndAudioWithUrl:(NSString *)urlStr UrlName:(NSString *)urlName andProgress:(serverProgressFn)progressFn IsVideo:(BOOL)isVideo
+{
+    [[NSUserDefaults standardUserDefaults] setObject:@"0" forKey:urlName];
+    [sizeDic setObject:@"0" forKey:urlName];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *extention = @"mp3";
+    if (isVideo) {
+        extention = @"mp4";
+    }
+    NSString *mediaUrl = [NSString stringWithFormat:@"%@.%@",urlName,extention];
+    NSString  *fullPath = [NSString stringWithFormat:@"%@/%@", documentsDirectory, mediaUrl];
+    NSLog(@"%@",fullPath);
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
+    NSURLSessionDownloadTask *task = [manager downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress) {
+        
+        NSLog(@"totalUnitCount----%lld",downloadProgress.totalUnitCount);
+        NSLog(@"completedUnitCount--%lld",downloadProgress.completedUnitCount);
+//        NSLog(@"-----completedUnitCount--%lld",[[[NSUserDefaults standardUserDefaults] objectForKey:urlName] longLongValue]);
+        
+//        long long completedUnitCount = [[[NSUserDefaults standardUserDefaults] objectForKey:urlName] longLongValue];
+        long long completedUnitCount = 0;
+        
+        
+        for (NSString *sizeStr in [self->sizeDic allValues]) {
+            completedUnitCount += [sizeStr longLongValue];
+        }
+        NSLog(@"添加的completedUnitCount--%lld",completedUnitCount);
+        NSLog(@"总的的completedUnitCount--%lld",self->totalSize);
+//        double value = ((double)completedUnitCount)/((double)[[GVUserDefaults standardUserDefaults].total longLongValue]);
+        
+        double value = ((double)completedUnitCount)/((double)self->totalSize);
+        
+//        [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%lld",downloadProgress.completedUnitCount] forKey:urlName];
+        [self->sizeDic setObject:[NSString stringWithFormat:@"%lld",downloadProgress.completedUnitCount] forKey:urlName];
+
+        progressFn(value);
+        
+    } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+        return [NSURL fileURLWithPath:fullPath];
+    } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+        self->number -= 1;
+        if (self->number == 0) {
+            progressFn(1);
+        }
+        
+    }];
+    
+    [task resume];
+}
 
 
 #pragma mark - 6.1 上传零时图片

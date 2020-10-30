@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TRPlayVideoViewController : BaseViewController
 
+@property (nonatomic, strong) CourseModel *courseModel;
+
 @end
 
 NS_ASSUME_NONNULL_END

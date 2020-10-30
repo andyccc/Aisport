@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) CardStaticView *staticView;
 @property (nonatomic, strong) UIImageView *classImageView;
+@property (nonatomic, strong) UILabel *sportTiLabel;
+@property (nonatomic, strong) UILabel *sportTimeLabel;
 
 @end
 
@@ -23,7 +25,7 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         
         //WithFrame:CGRectMake(16, 31, SCR_WIDTH-16*2, 96)
-        _staticView = [[CardStaticView alloc] initWithFrame:CGRectMake(16*2*Screen_Scale, 31, SCR_WIDTH-16*2*2*Screen_Scale, 96)];
+        _staticView = [[CardStaticView alloc] initWithFrame:CGRectMake(16*2*Screen_Scale, 1, SCR_WIDTH-16*2*2*Screen_Scale, 96)];
         [self addSubview:_staticView];
         _staticView.backgroundColor = [UIColor whiteColor];
     //    [_staticView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -52,12 +54,14 @@
         sportTiLabel.font = fontBold(19);
         sportTiLabel.textColor = [UIColor whiteColor];
         sportTiLabel.text = @"全身激活运动";
+        _sportTiLabel = sportTiLabel;
         
         UILabel *sportTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(18*2*Screen_Scale, sportTiLabel.bottom+16*2*Screen_Scale, _classImageView.width-(18+29+22)*2*Screen_Scale, 15)];
         [_classImageView addSubview:sportTimeLabel];
         sportTimeLabel.font = fontBold(19);
         sportTimeLabel.textColor = [UIColor whiteColor];
         sportTimeLabel.text = @"32min";
+        _sportTimeLabel = sportTimeLabel;
         
         
         UIButton *enterBtn = [[UIButton alloc] initWithFrame:CGRectMake(_classImageView.width-(29+22)*2*Screen_Scale, _classImageView.height/2-22*Screen_Scale, 22*2*Screen_Scale, 22*2*Screen_Scale)];
@@ -67,6 +71,18 @@
     return self;
 }
 
+- (void)setModel:(HomeListModel *)model
+{
+    _model = model;
+    _staticView.titleLabel.text = StringForId(model.name);
+    _staticView.playCountLabel.text = StringForId(model.playTotal);
+    _staticView.historyCountLabel.text = StringForId(model.highScore);
+    _staticView.costCountLabel.text = StringForId(model.calorieTotal);
+    _sportTiLabel.text = StringForId(model.descriptionStr);
+//    _sportTimeLabel.text = StringForId(model.minute);
+    _sportTimeLabel.text = [NSString stringWithFormat:@"%@min",StringForId(model.minute)];
+    [_classImageView sd_setImageWithURL:[NSURL URLWithString:StringForId(_model.cover)] placeholderImage:nil];
+}
 
 - (void)btnAction
 {

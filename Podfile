@@ -20,6 +20,8 @@ target 'Aisport' do
     pod 'SDWebImage'
     pod 'JSONModel'
     pod 'SVProgressHUD'
+    pod 'WechatOpenSDK', '~> 1.8.5'
+    pod 'GVUserDefaults'
 
    
 end

@@ -9,16 +9,14 @@
 
 @interface CardStaticView ()
 
-@property (nonatomic, strong) UILabel *titleLabel;
-
 @property (nonatomic, strong) UILabel *playTitleLabel;
-@property (nonatomic, strong) UILabel *playCountLabel;
+//@property (nonatomic, strong) UILabel *playCountLabel;
 
 @property (nonatomic, strong) UILabel *historyTitleLabel;
-@property (nonatomic, strong) UILabel *historyCountLabel;
+//@property (nonatomic, strong) UILabel *historyCountLabel;
 
 @property (nonatomic, strong) UILabel *costTitleLabel;
-@property (nonatomic, strong) UILabel *costCountLabel;
+//@property (nonatomic, strong) UILabel *costCountLabel;
 
 
 @end

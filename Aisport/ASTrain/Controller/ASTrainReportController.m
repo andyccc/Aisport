@@ -11,6 +11,7 @@
 #import "SDRotationLoopProgressView.h"
 #import "ReportprogressView.h"
 #import "TrainEndView.h"
+#import "ASTrainNetwork.h"
 
 @interface ASTrainReportController ()
 
@@ -100,7 +101,6 @@
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.font = fontBold(16);
     titleLabel.text = @"训练报告";
-    
     
     
     SDRotationLoopProgressView *progressView = [[SDRotationLoopProgressView alloc] initWithFrame:CGRectMake(78*2*Screen_Scale, SafeAreaTopHeight+18*2*Screen_Scale, SCR_WIDTH-78*2*2*Screen_Scale, SCR_WIDTH-78*2*2*Screen_Scale)];
@@ -289,6 +289,16 @@
 - (void)backButtonClick:(UIButton *)btn
 {
     [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+#pragma mark - Network
+- (void)addVideoPlayRecord
+{
+    [ASTrainNetwork addVideoPlayRecordWith:nil AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+            
+    } andFailerFn:^(NSError * _Nonnull error) {
+        
+    }];
 }
 
 /*

@@ -9,6 +9,7 @@
 #import "TRClassDetailViewController.h"
 #import "CardStaticView.h"
 #import "HomeListViewCell.h"
+#import "ASTrainNetwork.h"
 
 @interface HomeViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -18,14 +19,26 @@
 
 @property (nonatomic, strong) UITableView *mainView;
 
+@property (nonatomic, assign) NSInteger currentPage;
+@property (nonatomic, strong) NSMutableArray *dataSource;;
+
 @end
 
 @implementation HomeViewController
+
+- (NSMutableArray *)dataSource
+{
+    if (!_dataSource) {
+        _dataSource = [NSMutableArray arrayWithCapacity:0];
+    }
+    return _dataSource;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"首页";
+    _currentPage = 0;
     
     [self setMainView];
     // Do any additional setup after loading the view.
@@ -35,6 +48,7 @@
 {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
+    [_mainView.mj_header beginRefreshing];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -45,8 +59,7 @@
 
 - (void)setMainView
 {
-    
-    UITableView *mainView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, SCR_HIGHT-SafeAreaTopHeight) style:UITableViewStyleGrouped];
+    UITableView *mainView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, SCR_HIGHT-SafeAreaTopHeight) style:UITableViewStylePlain];
     [self.view addSubview:mainView];
     mainView.delegate = self;
     mainView.dataSource = self;
@@ -54,6 +67,13 @@
     mainView.estimatedRowHeight = 0;
     mainView.estimatedSectionFooterHeight = 0;
     mainView.estimatedSectionHeaderHeight = 0;
+    WS(weakSelf);
+    mainView.mj_header = [JXRefreshHeader headerWithRefreshingBlock:^{
+        [weakSelf getHomeCourseWithPage:1 AndRefresh:0];
+    }];
+    mainView.mj_footer = [JXRefreshFooter footerWithRefreshingBlock:^{
+        [weakSelf getHomeCourseWithPage:_currentPage+1 AndRefresh:1];
+    }];
     _mainView = mainView;
     
     UIView *headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 254*2*Screen_Scale+4*2*Screen_Scale)];
@@ -102,20 +122,21 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 2;
+    return self.dataSource.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    HomeListViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"TaskHomeListViewCell"];
+    HomeListViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"HomeListViewCell"];
     if (cell == nil) {
-        cell = [[HomeListViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"TaskHomeListViewCell"];
+        cell = [[HomeListViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"HomeListViewCell"];
     }
     WS(weakSelf);
     cell.homeCellJumpBlock = ^{
         TRClassDetailViewController *vc = [[TRClassDetailViewController alloc] init];
         [weakSelf.navigationController pushViewController:vc animated:YES];
     };
+    cell.model = self.dataSource[indexPath.row];
 //    cell.type = _type;
 //    TaskHomeModel *model = _dataSource[indexPath.row];
 //    cell.model = model;
@@ -125,11 +146,72 @@
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 97+6+146*2*Screen_Scale+10;
+}
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    HomeListModel *model = self.dataSource[indexPath.row];
     TRClassDetailViewController *vc = [[TRClassDetailViewController alloc] init];
+    vc.codeId = StringForId(model.courseCode);
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)getHomeCourseWithPage:(NSInteger)page AndRefresh:(int)refresh
+{
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    [body setObject:[NSString stringWithFormat:@"%ld",(long)page] forKey:@"current"];
+    
+    WS(weakSelf);
+    [ASTrainNetwork getHomeCourseWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        if(ResponseSuccess){
+            NSArray* temp = responseAfter[@"records"];
+            weakSelf.currentPage = [NSString stringForId:responseAfter[@"current"]].integerValue;
+            
+            if (refresh == 0) {
+                [weakSelf.dataSource removeAllObjects];
+                [weakSelf.mainView.mj_header endRefreshing];
+                [weakSelf.mainView.mj_footer resetNoMoreData];
+            }else {
+                if(temp.count != 0)
+                {
+                    [weakSelf.mainView.mj_footer endRefreshing];
+                }else{
+                    [weakSelf.mainView.mj_footer endRefreshingWithNoMoreData];
+                }
+            }
+            
+            for (NSDictionary * dict in temp) {
+                HomeListModel * model = [[HomeListModel alloc] initWithDictionary:dict error:nil];
+                model.descriptionStr = StringForId(dict[@"description"]);
+                [weakSelf.dataSource addObject:model];
+            }
+            
+        }else{
+            if ([StringForId(responseAfter) isEqualToString:@""]) {
+                [SVProgressHUD showInfoWithStatus:@"发生未知错误"];
+            }else{
+                [SVProgressHUD showInfoWithStatus:StringForId(responseAfter)];
+            }
+            [weakSelf.mainView.mj_header endRefreshing];
+            [weakSelf.mainView.mj_footer endRefreshing];
+        }
+//        [_emptyView showEmptyViewWithData:_dataSource];
+        [weakSelf.mainView reloadData];
+    } andFailerFn:^(NSError * _Nonnull error) {
+        [weakSelf.mainView.mj_header endRefreshing];
+        [weakSelf.mainView.mj_footer endRefreshing];
+        
+    }];
+}
+
+
+- (BOOL)prefersStatusBarHidden {
+    
+    return YES;
 }
 
 /*
