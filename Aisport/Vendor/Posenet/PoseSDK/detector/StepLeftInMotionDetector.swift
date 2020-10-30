@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreImage
 
 class StepLeftInMotionDetector:BaseMotionDetector{
         

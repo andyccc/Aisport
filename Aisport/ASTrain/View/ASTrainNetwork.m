@@ -34,4 +34,9 @@
     [[ASTrainNetwork share] AFGETHeadTNetworkWithUrl:@"ai/videoplayrecord/report" HeaderToken:[GVUserDefaults standardUserDefaults].access_token andBody:body andSuccess:successFn andFailer:failerFn];
 }
 
++(void)generateQrCodWith:(NSMutableDictionary *)body  AndSuccessFn:(serverSuccessFn)successFn andFailerFn:(serverFailureFn)failerFn
+{
+    [[ASTrainNetwork share] AFGETResponseHeadTNetworkWithUrl:@"ai/qrCode/generateQrCode" HeaderToken:[GVUserDefaults standardUserDefaults].access_token andBody:body andSuccess:successFn andFailer:failerFn];
+}
+
 @end

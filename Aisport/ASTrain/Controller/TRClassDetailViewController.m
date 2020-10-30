@@ -43,7 +43,7 @@
 - (CourseShareView *)courseShareView
 {
     if (!_courseShareView) {
-        _courseShareView = [[CourseShareView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, SCR_HIGHT)];
+        _courseShareView = [[CourseShareView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, SCR_HIGHT) HomeListModel:_model];
         _courseShareView.backgroundColor = [UIColor colorWithHex:@"6d6d6f"];
     }
     return _courseShareView;
@@ -192,6 +192,7 @@
     [collectBtn addTarget:self action:@selector(collectBtnClick) forControlEvents:UIControlEventTouchUpInside];
     _collectBtn = collectBtn;
     
+//    [self generateQrCod];
     // Do any additional setup after loading the view.
 }
 
@@ -527,6 +528,20 @@
         }else{
             [SVProgressHUD showInfoWithStatus:StringForId(responseBefore[@"msg"])];
         }
+    } andFailerFn:^(NSError * _Nonnull error) {
+        
+    }];
+}
+
+- (void)generateQrCod
+{
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:0];
+    [body setObject:_codeId forKey:@"code"];
+    NSLog(@"%@",[GVUserDefaults standardUserDefaults].access_token);
+    [SVProgressHUD show];
+    WS(weakSelf);
+    [ASTrainNetwork generateQrCodWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
+        
     } andFailerFn:^(NSError * _Nonnull error) {
         
     }];

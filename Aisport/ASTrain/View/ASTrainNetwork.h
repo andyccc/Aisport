@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 +(void)checkVideoPlayResportWith:(NSMutableDictionary *)body  AndSuccessFn:(serverSuccessFn)successFn andFailerFn:(serverFailureFn)failerFn;
 
++(void)generateQrCodWith:(NSMutableDictionary *)body  AndSuccessFn:(serverSuccessFn)successFn andFailerFn:(serverFailureFn)failerFn;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -9,13 +9,13 @@
 
 @implementation CourseShareView
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)initWithFrame:(CGRect)frame HomeListModel:(HomeListModel *)model
 {
     if (self = [super initWithFrame:frame]) {
         
         UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        backButton.frame = CGRectMake(22, StatusHeight + 17, 18, 32);
-        [backButton setImage:[UIImage imageNamed:@"back_white"] forState:UIControlStateNormal];
+        backButton.frame = CGRectMake(22, StatusHeight + 17, 27, 27);
+        [backButton setImage:[UIImage imageNamed:@"cha"] forState:UIControlStateNormal];
         [backButton addTarget:self action:@selector(backButtonClick) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:backButton];
         
@@ -36,20 +36,21 @@
         [middleBgView addSubview:picImageView];
         picImageView.contentMode = UIViewContentModeScaleAspectFill;
         picImageView.clipsToBounds = YES;
+        [picImageView sd_setImageWithURL:[NSURL URLWithString:StringForId(model.detailCover)] placeholderImage:nil];
         
         UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13*2*Screen_Scale, picImageView.bottom, middleBgView.width-13*2*2*Screen_Scale, 44*2*Screen_Scale)];
         [middleBgView addSubview:nameLabel];
         nameLabel.textAlignment = NSTextAlignmentLeft;
         nameLabel.font = fontBold(21);
         nameLabel.textColor = [UIColor whiteColor];
-        nameLabel.text = @"帕梅拉有氧健身操";
+        nameLabel.text = StringForId(model.name);
         
         UILabel *nameSubLabel = [[UILabel alloc] initWithFrame:CGRectMake(13*2*Screen_Scale, nameLabel.bottom, middleBgView.width-13*2*2*Screen_Scale, 12)];
         [middleBgView addSubview:nameSubLabel];
         nameSubLabel.textAlignment = NSTextAlignmentLeft;
         nameSubLabel.font = fontApp(12);
         nameSubLabel.textColor = [UIColor whiteColor];
-        nameSubLabel.text = @"嗨动AI健身课程  中等";
+        nameSubLabel.text = [NSString stringWithFormat:@"%@  中等",StringForId(model.content)];
         
         UIView *whiteBgView = [[UIView alloc] initWithFrame:CGRectMake(13*2*Screen_Scale, nameSubLabel.bottom+12, middleBgView.width-13*2*2*Screen_Scale, 92*2*Screen_Scale)];
         [middleBgView addSubview:whiteBgView];
@@ -83,6 +84,12 @@
                 [numAttri appendAttributedString:numAfterAttri];
             }
             numberLab.attributedText = numAttri;
+            
+            if (i == 0) {
+                numberLab.text = StringNumForId(model.playTotal, @"0");
+            }else if (i == 1){
+                numberLab.text = StringNumForId(model.highScore, @"0");
+            }
         }
         
         UIView *erweimaBgView = [[UIView alloc] initWithFrame:CGRectMake(SCR_WIDTH/2-170*Screen_Scale, middleBgView.bottom+15, 170*2*Screen_Scale, 62*2*Screen_Scale)];

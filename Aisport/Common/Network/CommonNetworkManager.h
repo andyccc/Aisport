@@ -23,6 +23,8 @@ typedef void (^serverProgressFn)(double value);
 
 -(void)AFGETNetworkWithUrl:(NSString *)url andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn;
 
+-(void)AFGETResponseHeadTNetworkWithUrl:(NSString *)url HeaderToken:(NSString *)headerToken andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn;
+
 //token
 -(void)AFGETHeadTNetworkWithUrl:(NSString *)url HeaderToken:(NSString *)headerToken andBody:(NSMutableDictionary *)body andSuccess:(serverSuccessFn)successFn andFailer:(serverFailureFn)failerFn;
 

@@ -30,6 +30,8 @@
     _subTitles = @[@"",@"男",@"天涯",@"1527389679"].mutableCopy;
     
     [self setMainView];
+    
+    [self.view endEditing:YES];
     // Do any additional setup after loading the view.
 }
 
@@ -120,6 +122,7 @@
         cell.subTf.userInteractionEnabled = NO;
 //        cell.subTf.text = _subTitles[indexPath.row];
         cell.subTf.text = StringForId([GVUserDefaults standardUserDefaults].phone);
+        [self.view endEditing:YES];
     }else if (indexPath.row == 1){
         [cell.subTf becomeFirstResponder];
         cell.subTf.text = [GVUserDefaults standardUserDefaults].sex == 0 ? @"男":@"女";

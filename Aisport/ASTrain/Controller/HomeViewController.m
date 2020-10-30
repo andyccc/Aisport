@@ -63,7 +63,7 @@
     [self.view addSubview:mainView];
     mainView.delegate = self;
     mainView.dataSource = self;
-    mainView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    mainView.separatorStyle = UITableViewCellSeparatorStyleNone;
     mainView.estimatedRowHeight = 0;
     mainView.estimatedSectionFooterHeight = 0;
     mainView.estimatedSectionHeaderHeight = 0;
@@ -77,6 +77,7 @@
     _mainView = mainView;
     
     UIView *headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 254*2*Screen_Scale+4*2*Screen_Scale)];
+    
     
     _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 254*2*Screen_Scale)];
     [headView addSubview:_bannerImageView];
@@ -110,6 +111,39 @@
     borderLayer.frame = bottomView.bounds;
     bottomView.layer.mask = mask;
     [bottomView.layer addSublayer:borderLayer];
+
+//    _bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 254*2*Screen_Scale)];
+//    [self.view addSubview:_bannerImageView];
+//    _bannerImageView.contentMode = UIViewContentModeScaleAspectFill;
+//    _bannerImageView.clipsToBounds = YES;
+//    _bannerImageView.image = [UIImage imageNamed:@"home_banner"];
+//    
+//    
+//    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCR_WIDTH/2-150/2, StatusHeight + 7, 150, 30)];
+//    [_bannerImageView addSubview:titleLabel];
+//    titleLabel.textAlignment = NSTextAlignmentCenter;
+//    titleLabel.textColor = [UIColor whiteColor];
+//    titleLabel.font = fontBold(16);
+//    titleLabel.text = @"嗨动AI";
+    
+    
+//    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, _bannerImageView.bottom-14*2*Screen_Scale, SCR_WIDTH, SCR_HIGHT-_bannerImageView.bottom+14*2*Screen_Scale)];
+//    [self.view addSubview:bottomView];
+//    bottomView.backgroundColor = [UIColor whiteColor];
+//
+//    CAShapeLayer *mask=[CAShapeLayer layer];
+//    UIBezierPath * path = [UIBezierPath bezierPathWithRoundedRect:bottomView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft  cornerRadii:CGSizeMake(16,16)];
+//    mask.path = path.CGPath;
+//    mask.frame = bottomView.bounds;
+//
+//    CAShapeLayer *borderLayer = [CAShapeLayer layer];
+//    borderLayer.path = path.CGPath;
+//    borderLayer.fillColor = [UIColor clearColor].CGColor;
+//    //        borderLayer.strokeColor = [UIColor colorWithHex:@"#FDAB00"].CGColor;
+//    //        borderLayer.lineWidth = 1;
+//    borderLayer.frame = bottomView.bounds;
+//    bottomView.layer.mask = mask;
+//    [bottomView.layer addSublayer:borderLayer];
     
     
     mainView.tableHeaderView = headView;
@@ -125,6 +159,7 @@
     return self.dataSource.count;
 }
 
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     HomeListViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"HomeListViewCell"];
@@ -138,6 +173,7 @@
         [weakSelf.navigationController pushViewController:vc animated:YES];
     };
     cell.model = self.dataSource[indexPath.row];
+//    cell.backgroundColor = [UIColor redColor];
 //    cell.type = _type;
 //    TaskHomeModel *model = _dataSource[indexPath.row];
 //    cell.model = model;
@@ -151,6 +187,7 @@
 {
     return 97+6+146*2*Screen_Scale+10;
 }
+
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

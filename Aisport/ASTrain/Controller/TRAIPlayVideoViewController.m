@@ -69,6 +69,7 @@
 @property (nonatomic, strong) ActionDetectorSelector *actionDetectorSelector;
 
 
+
 @end
 
 @implementation TRAIPlayVideoViewController

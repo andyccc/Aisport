@@ -12,6 +12,7 @@
 #import "MineViewController.h"
 #import "WechatShareManager.h"
 #import <WXApi.h>
+#import "WCDBService.h"
 
 @interface AppDelegate ()
 
@@ -27,6 +28,7 @@
     [WXApi registerApp:@"wx2846e9f646cea330" universalLink:@"https://ap.hidoba.com/app/"];
     NSString *version = [WXApi getApiVersion];  //1.8.7.1
 
+    [self initConfig];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -96,6 +98,13 @@
             return [WechatShareManager handleOpenUrl:url];
     }
     return YES;
+}
+- (void)initConfig
+{
+    // 配置数据库并启动
+    NSString *loginedUserId = @"123";
+    
+    [WCDBService setDBName:loginedUserId];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application

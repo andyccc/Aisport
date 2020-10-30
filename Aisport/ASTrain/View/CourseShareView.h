@@ -6,10 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HomeListModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CourseShareView : UIView
+
+- (instancetype)initWithFrame:(CGRect)frame HomeListModel:(HomeListModel *)model;
 
 @end
 

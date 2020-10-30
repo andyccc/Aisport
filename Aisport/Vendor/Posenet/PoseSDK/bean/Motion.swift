@@ -40,7 +40,7 @@ enum MotionEnum {
         case PunchDown:
             return PunchDownMotionDetector(maxCycleSeconds: 2)
         case StepRightOut:
-            return StepLeftOutMotionDetector(maxCycleSeconds: 2)
+            return StepRightOutMotionDetector(maxCycleSeconds: 2)
         case StepRightIn:
             return StepRightInMotionDetector(maxCycleSeconds: 2)
         case StepLeftOut:

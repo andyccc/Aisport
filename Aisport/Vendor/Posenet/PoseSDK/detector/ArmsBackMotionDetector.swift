@@ -54,7 +54,7 @@ class ArmsBackMotionDetector:BaseMotionDetector{
         }
         //判断左手的变动幅度
         if maxX-minX<100{
-            return MotionMsg(motion: motion, status: MotionStatus.bad, msg:"打开幅度不足")
+            return MotionMsg(motion: motion, status: MotionStatus.bad, msg:"收回幅度不足")
         }
         
         
@@ -75,16 +75,16 @@ class ArmsBackMotionDetector:BaseMotionDetector{
             return
         }
         if state==ArmsBackMotionDetector.STATE_START{
-            state = (curPos.x-prePos.x<0) ? ArmsBackMotionDetector.STATE_DOING : ArmsBackMotionDetector.STATE_END
+            state = (curPos.x-prePos.x>0) ? ArmsBackMotionDetector.STATE_DOING : ArmsBackMotionDetector.STATE_END
         }
         else if state==ArmsBackMotionDetector.STATE_DOING{
-            state = (curPos.x-prePos.x<0) ? ArmsBackMotionDetector.STATE_DOING : ArmsBackMotionDetector.STATE_END
+            state = (curPos.x-prePos.x>0) ? ArmsBackMotionDetector.STATE_DOING : ArmsBackMotionDetector.STATE_END
         }
         else if state==ArmsBackMotionDetector.STATE_END{
             state = ArmsBackMotionDetector.STATE_NOT_DOING
         }
         else if state==ArmsBackMotionDetector.STATE_NOT_DOING{
-            state = (curPos.x-prePos.x < -40) ? ArmsBackMotionDetector.STATE_START : ArmsBackMotionDetector.STATE_NOT_DOING
+            state = (curPos.x-prePos.x > 40) ? ArmsBackMotionDetector.STATE_START : ArmsBackMotionDetector.STATE_NOT_DOING
         }
         
         if state==ArmsBackMotionDetector.STATE_END{

@@ -1,0 +1,6 @@
+module Pods_Aisport {
+  umbrella header "Pods-Aisport-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -37,7 +37,7 @@
         titleLabel.text = @"分享给好友";
         
         NSArray *btnTiArr = @[@"保存到相册",@"微信好友",@"微信朋友圈"];
-        NSArray *btnImageArr = @[@"",@"",@""];
+        NSArray *btnImageArr = @[@"download",@"wechat",@"pengyouquan"];
         CGFloat btnW = SCR_WIDTH/3;
         for (int i = 0; i < btnTiArr.count; i++) {
             UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(btnW*i, 62, btnW, 35+9+10)];
