@@ -32,6 +32,7 @@
 
 @property (nonatomic, strong) CourseShareView *courseShareView;
 @property (nonatomic, strong) ShowShareBtnView *showShareBtnView;
+@property (nonatomic, strong) UIButton *collectBtn;
 
 @property (nonatomic, strong) CourseModel *courseModel;
 
@@ -179,6 +180,7 @@
     
     UIButton *collectBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 40, 50)];
     [collectBtn setImage:[UIImage imageNamed:@"train_collect"] forState:UIControlStateNormal];
+    [collectBtn setImage:[UIImage imageNamed:@"train_collect_sel"] forState:UIControlStateSelected];
 //    [collectBtn setTitle:@"web" forState:UIControlStateNormal];
 //    [collectBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
     
@@ -188,7 +190,7 @@
     self.navigationItem.rightBarButtonItems = @[rightItem,rightItem1];;
     [shareBtn addTarget:self action:@selector(shareBtnClick) forControlEvents:UIControlEventTouchUpInside];
     [collectBtn addTarget:self action:@selector(collectBtnClick) forControlEvents:UIControlEventTouchUpInside];
-    
+    _collectBtn = collectBtn;
     
     // Do any additional setup after loading the view.
 }
@@ -421,6 +423,12 @@
     _introLabel.text = StringForId(_model.content);
     
     _scrollView.contentSize = CGSizeMake(SCR_WIDTH, _introLabel.bottom+38+10+24*3);
+    
+    if ([StringForId(_model.isCollect) isEqual:@"1"]) {
+        _collectBtn.selected = YES;
+    }else{
+        _collectBtn.selected = NO;
+    }
 }
 
 
@@ -505,10 +513,17 @@
     [body setObject:_codeId forKey:@"code"];
     NSLog(@"%@",[GVUserDefaults standardUserDefaults].access_token);
     [SVProgressHUD show];
+    WS(weakSelf);
     [ASTrainNetwork postCollectSwitchCourseWith:body AndSuccessFn:^(id  _Nonnull responseAfter, id  _Nonnull responseBefore) {
         [SVProgressHUD dismiss];
         if (ResponseSuccess) {
-            
+            if ([StringForId(weakSelf.model.isCollect) isEqual:@"1"]) {
+                weakSelf.model.isCollect = @"0";
+                weakSelf.collectBtn.selected = NO;
+            }else{
+                weakSelf.model.isCollect = @"1";
+                weakSelf.collectBtn.selected = YES;
+            }
         }else{
             [SVProgressHUD showInfoWithStatus:StringForId(responseBefore[@"msg"])];
         }

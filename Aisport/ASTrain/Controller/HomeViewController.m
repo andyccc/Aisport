@@ -131,6 +131,7 @@
     if (cell == nil) {
         cell = [[HomeListViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"HomeListViewCell"];
     }
+    cell.backgroundColor = [UIColor whiteColor];
     WS(weakSelf);
     cell.homeCellJumpBlock = ^{
         TRClassDetailViewController *vc = [[TRClassDetailViewController alloc] init];
