@@ -212,10 +212,10 @@ class ImageHandler {
       accumulator + sigmoid(heats[0, elem.element.0, elem.element.1, elem.offset])
     }
     let totalScore = totalScoreSum / Float32(Model.output.keypointSize)
-    var minX:Float=0
-    var minY:Float=0
-    var maxX:Float=10000
-    var maxY:Float=10000
+    var minX:Float=Float(size.width-1)
+    var minY:Float=Float(size.height-1)
+    var maxX:Float=0
+    var maxY:Float=0
 
     // MARK: Calculate key point position on model input
     // Calculates `KeyPoint` coordination model input image with `offsets` adjustment.
@@ -226,16 +226,16 @@ class ImageHandler {
         let xCoord = Float32(x) / Float32(Model.output.width - 1) * Float32(Model.input.width)
             + offsets[0, y, x, index + Model.output.keypointSize]
         
-        if yCoord>maxY{
+        if yCoord>maxY && yCoord<Float(size.height){
             maxY=yCoord
         }
-        if yCoord<minY{
+        if yCoord<minY && yCoord>=0{
             minY=yCoord
         }
-        if xCoord>maxX{
+        if xCoord>maxX && xCoord<Float(size.width){
             maxX=xCoord
         }
-        if xCoord<minX{
+        if xCoord<minX && xCoord>=0{
             minX=xCoord
         }
         
