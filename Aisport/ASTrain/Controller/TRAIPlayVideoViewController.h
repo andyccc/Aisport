@@ -2,7 +2,7 @@
 //  TRAIPlayVideoViewController.h
 //  Aisport
 //
-//  Created by YANS on 2020/10/19.
+//  Created by andyccc on 2020/10/19.
 //
 
 #import "BaseViewController.h"

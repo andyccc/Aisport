@@ -2,7 +2,7 @@
 //  UIColorExtension.swift
 //  PoseNet
 //
-//  Created by YANS on 2020/10/14.
+//  Created by andyccc on 2020/10/14.
 //  Copyright © 2020 tensorflow. All rights reserved.
 //
 

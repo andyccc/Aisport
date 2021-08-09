@@ -2,7 +2,7 @@
 //  CGSizeExtension.h
 //  sport
 //
-//  Created by YANS on 2020/10/18.
+//  Created by andyccc on 2020/10/18.
 //
 
 #ifndef CGSizeExtension_h

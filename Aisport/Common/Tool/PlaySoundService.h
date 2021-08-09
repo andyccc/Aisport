@@ -2,8 +2,8 @@
 //  PlaySoundService.h
 //  STC
 //
-//  Created by yans on 2018/8/17.
-//  Copyright © 2018年 hzty. All rights reserved.
+//  Created by andyccc on 2018/8/17.
+//  Copyright © 2018年 andyccc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
